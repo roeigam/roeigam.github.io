@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roei Gamliel — Software Developer</title>
+<meta name="description" content="Roei Gamliel — Software Developer. Full-stack &amp; systems integration. ArtVenture, release automation, and more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --paper:#EEF1F0; --panel:#F9FAF8; --ink:#152025; --ink-soft:#4B5A5C; --ink-faint:#7C8888;
+    --rule:#C9D2CF; --rule-strong:#9FADA9; --blue:#2B5C78; --blue-bg:#DCE6E9;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:1.6;
+  }
+  .wrap{ max-width:760px; margin:0 auto; padding:14vw 6vw 10vw 6vw; }
+  @media(min-width:700px){ .wrap{ padding:100px 24px 80px 24px; } }
+
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--blue); margin-bottom:14px; }
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:44px; line-height:1.05; letter-spacing:-0.01em; margin:0 0 10px 0; }
+  .role{ font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink-soft); letter-spacing:0.02em; margin-bottom:26px; }
+
+  p.lede{ font-size:17px; color:var(--ink-soft); max-width:56ch; margin:0 0 30px 0; }
+  p.lede b{ color:var(--ink); font-weight:600; }
+
+  .links{ display:flex; flex-wrap:wrap; gap:10px 18px; margin-bottom:56px; font-family:'JetBrains Mono',monospace; font-size:14px; }
+  .links a{ color:var(--blue); text-decoration:none; border-bottom:1px solid var(--blue-bg); padding-bottom:2px; }
+  .links a:hover{ border-bottom-color:var(--blue); }
+
+  .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--blue); border-bottom:1px solid var(--ink); padding-bottom:8px; margin:0 0 22px 0; }
+
+  .card{ display:block; text-decoration:none; color:inherit; border:1px solid var(--rule-strong); background:var(--panel); padding:22px 24px; margin-bottom:16px; transition:border-color .15s ease, transform .15s ease; }
+  .card:hover{ border-color:var(--blue); transform:translateY(-1px); }
+  .card .ctop{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px; }
+  .card .ctitle{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:20px; color:var(--ink); }
+  .card .ctag{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
+  .card p{ margin:0; color:var(--ink-soft); font-size:15px; }
+  .card .cta{ display:inline-block; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--blue); }
+  .card .cta::after{ content:" →"; }
+
+  .stack-line{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); margin-top:-6px; margin-bottom:2px; }
+
+  footer{ margin-top:70px; padding-top:20px; border-top:1px solid var(--rule); font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer a{ color:var(--ink-faint); }
+
+  section{ margin-bottom:56px; }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Software Developer</div>
+  <h1>Roei Gamliel</h1>
+  <div class="role">Full-Stack &amp; Systems Integration</div>
+
+  <p class="lede">Software developer with 3+ years across systems integration, automation, and QA, plus hands-on full-stack delivery leading <b>ArtVenture</b> end to end — from database schema to CI/CD to shipped feature.</p>
+
+  <div class="links">
+    <a href="https://github.com/roeigam" target="_blank" rel="noopener">GitHub ↗</a>
+    <a href="https://www.linkedin.com/in/roei-gamliel-42a65028b/" target="_blank" rel="noopener">LinkedIn ↗</a>
+    <a href="mailto:roigamliel@hotmail.com">roigamliel@hotmail.com</a>
+  </div>
+
+  <section>
+    <div class="h2">Work</div>
+
+    <a class="card" href="assets/ArtVenture-Portfolio.pdf" target="_blank" rel="noopener">
+      <div class="ctop"><span class="ctitle">ArtVenture</span><span class="ctag">Case Study · PDF</span></div>
+      <p>A trip-planning platform built around a deterministic feasibility engine — checks whether a planned day is actually achievable given real drive times, opening hours, and daylight windows, and returns a clear verdict instead of a guess. ~74K lines of code, 48 API routes, 6-source data pipeline.</p>
+      <div class="stack-line">Next.js · TypeScript · Prisma · PostgreSQL · Mapbox GL · Stripe</div>
+      <span class="cta">Read the case study</span>
+    </a>
+
+    <a class="card" href="assets/Release-Engineering-Case-Study.pdf" target="_blank" rel="noopener">
+      <div class="ctop"><span class="ctitle">Rebuilding How a Team Ships</span><span class="ctag">Case Study · PDF</span></div>
+      <p>Rebuilt the release process for a mission-critical communications program at Rafael Advanced Defense Systems: portable HTML→PDF release notes, a one-click versioning tool, a Windows app that replaced a manual SSH workflow, and everyday scripting that removed friction across a team of integrators.</p>
+      <div class="stack-line">Python · Bash · Linux · SSH automation · Windows desktop development</div>
+      <span class="cta">Read the case study</span>
+    </a>
+
+    <a class="card" href="assets/Resume-Roei-Gamliel.pdf" target="_blank" rel="noopener">
+      <div class="ctop"><span class="ctitle">Resume</span><span class="ctag">PDF</span></div>
+      <p>Full work history, education, and skills.</p>
+      <span class="cta">Download resume</span>
+    </a>
+  </section>
+
+  <footer>
+    <span>Roei Gamliel</span>
+    <a href="mailto:roigamliel@hotmail.com">roigamliel@hotmail.com</a>
+  </footer>
+
+</div>
+</body>
+</html>
