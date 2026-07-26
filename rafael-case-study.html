@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rafael Case Study — Roei Gamliel</title>
+<meta name="description" content="Release automation and tooling for a mission-critical communications program at Rafael Advanced Defense Systems.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/default-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<style>
+
+  :root{
+    --bg:#0B1416; --panel:#121E21; --panel-raise:#17262A; --code-bg:#080F11;
+    --ink:#EDF5F4; --ink-soft:#9FB9BA; --ink-faint:#5C7476;
+    --line:#213538; --line-soft:#1A2B2E;
+    --teal:#3FDCB8; --violet:#8D7CF5; --red:#E2775A; --amber:#D9A94F;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:1.65;
+  }
+  ::selection{ background:var(--violet); color:#0B1416; }
+
+  .aurora-bar{ height:4px; width:100%; background:linear-gradient(90deg, var(--teal), var(--violet) 60%, #C084F5); }
+
+  .wrap{ max-width:1240px; margin:0 auto; padding:10vw 6vw 12vw 6vw; }
+  @media(min-width:700px){ .wrap{ padding:56px 44px 100px 44px; } }
+
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--teal); margin-bottom:28px; display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap; }
+  .eyebrow .meta{ color:var(--ink-faint); }
+  .back{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-faint); text-decoration:none; border-bottom:1px solid transparent; }
+  .back:hover{ color:var(--teal); border-bottom-color:var(--teal); }
+
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:56px; line-height:1.0; letter-spacing:-0.015em; margin:0 0 12px 0; }
+  @media(min-width:700px){ h1{ font-size:72px; } }
+  .role{ font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink-soft); letter-spacing:0.02em; margin-bottom:26px; }
+
+  p.lede{ font-size:19px; color:var(--ink-soft); margin:0 0 50px 0; }
+  p.lede b{ color:var(--teal); font-weight:600; }
+
+  section{ margin-bottom:72px; }
+  .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); border-bottom:1px solid var(--line); padding-bottom:10px; margin:0 0 26px 0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+  .h2 .tag{ color:var(--ink-faint); font-weight:500; text-transform:none; letter-spacing:0; }
+
+  section > p{ color:var(--ink-soft); margin:0 0 18px 0; }
+  section > p b{ color:var(--ink); font-weight:600; }
+  section > p code{ font-family:'JetBrains Mono',monospace; font-size:0.9em; background:rgba(141,124,245,0.14); color:var(--violet); padding:1px 6px; border-radius:3px; }
+
+  /* Before / After */
+  .ba-wrap{ display:grid; grid-template-columns:1fr; gap:16px; align-items:stretch; margin:22px 0 10px 0; }
+  @media(min-width:800px){ .ba-wrap{ grid-template-columns:1fr 44px 1fr; } }
+  .ba-panel{ background:var(--panel); border:1px solid var(--line); padding:22px 24px; }
+  .ba-panel .ba-label{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:12px; }
+  .ba-panel.after .ba-label{ color:var(--teal); }
+  .ba-panel ul{ margin:0; padding-left:18px; color:var(--ink-soft); font-size:14.5px; line-height:1.85; }
+  .ba-arrow{ display:none; align-items:center; justify-content:center; color:var(--violet); font-size:22px; font-family:'Space Grotesk',sans-serif; }
+  @media(min-width:800px){ .ba-arrow{ display:flex; } }
+
+  /* Pipeline / process strip */
+  .pipeline{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px 22px; margin:22px 0 8px 0; }
+  @media(min-width:700px){ .pipeline{ grid-template-columns:repeat(4,1fr); } }
+  .pipeline .step{ border-top:2px solid var(--teal); padding-top:12px; }
+  .pipeline .step .num{ font-family:'JetBrains Mono',monospace; color:var(--ink-faint); font-size:11px; letter-spacing:0.06em; }
+  .pipeline .step h4{ font-family:'Space Grotesk',sans-serif; font-size:15px; margin:5px 0 6px 0; color:var(--ink); }
+  .pipeline .step p{ font-size:13px; color:var(--ink-soft); margin:0; line-height:1.55; }
+
+  .stack-tags{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 8px 0; }
+  .stack-tags span{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-soft); background:var(--panel); border:1px solid var(--line); padding:6px 12px; }
+
+  /* Code card */
+  .code-card{ background:var(--code-bg); border:1px solid var(--line); margin:20px 0 20px 0; overflow:hidden; }
+  .code-card .cc-head{ display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12px; color:#6F8A8C; flex-wrap:wrap; gap:6px; }
+  .code-card .cc-head .fname{ color:var(--teal); }
+  .code-card pre{ margin:0; padding:18px 20px; overflow-x:auto; }
+  .code-card code.hljs{ background:transparent !important; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.7; padding:0; }
+  .code-note{ font-family:'IBM Plex Sans',sans-serif; font-size:14px; color:var(--ink-faint); margin:-8px 0 26px 0; padding-left:16px; border-left:2px solid var(--violet); font-style:italic; }
+
+  .two-col{ display:grid; grid-template-columns:1fr; gap:26px; }
+  @media(min-width:700px){ .two-col{ grid-template-columns:1fr 1fr; } }
+  .two-col .block{ background:var(--panel); border:1px solid var(--line); padding:20px 22px; }
+  .two-col .block h3{ font-family:'Space Grotesk',sans-serif; font-size:16.5px; margin:0 0 8px 0; color:var(--ink); }
+  .two-col .block p{ font-size:14.5px; margin:0; color:var(--ink-soft); }
+
+  footer{ margin-top:80px; padding-top:24px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer a{ color:var(--ink-faint); }
+
+  /* Release-notes redesign mockup */
+  .mock-frame{ border:1px solid var(--line); background:var(--code-bg); margin:22px 0 10px 0; }
+  .mock-frame .mock-label{ display:flex; justify-content:space-between; padding:10px 18px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12px; color:#6F8A8C; flex-wrap:wrap; gap:6px; }
+  .mock-frame .mock-label .fname{ color:var(--teal); }
+  .mock-body{ padding:26px 26px 22px 26px; }
+  .mock-top{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:10px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--line); }
+  .mock-top h4{ font-family:'Space Grotesk',sans-serif; font-size:22px; margin:0; color:var(--ink); }
+  .mock-badge{ font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.04em; text-transform:uppercase; padding:4px 10px; border-radius:3px; background:rgba(63,220,184,0.14); color:var(--teal); border:1px solid rgba(63,220,184,0.35); }
+  .mock-cols{ display:grid; grid-template-columns:1fr; gap:18px; margin-bottom:24px; }
+  @media(min-width:700px){ .mock-cols{ grid-template-columns:repeat(3,1fr); } }
+  .mock-col{ border-left:2px solid var(--line); padding-left:14px; }
+  .mock-col.hl{ border-left-color:var(--teal); }
+  .mock-col.fix{ border-left-color:var(--violet); }
+  .mock-col.lim{ border-left-color:var(--amber); }
+  .mock-col h5{ font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; margin:0 0 10px 0; color:var(--ink-soft); }
+  .mock-col ul{ margin:0; padding-left:16px; font-size:13.5px; color:var(--ink-soft); line-height:1.7; }
+  .mock-table{ width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:13px; }
+  .mock-table th{ text-align:left; color:var(--ink-faint); font-weight:500; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; padding:8px 10px; border-bottom:1px solid var(--line); }
+  .mock-table td{ padding:9px 10px; border-bottom:1px solid var(--line-soft); color:var(--ink-soft); }
+  .mock-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:7px; }
+  .mock-dot.ok{ background:var(--teal); }
+  .mock-dot.watch{ background:var(--amber); }
+
+</style>
+</head>
+<body>
+<div class="aurora-bar"></div>
+<div class="wrap">
+
+  <div class="eyebrow">
+    <a class="back" href="index.html">← roeigam.github.io</a>
+    <span class="meta">Rafael Advanced Defense Systems · 2022–2024</span>
+  </div>
+
+  <h1>Rafael Case Study</h1>
+  <div class="role">Release Automation &amp; Tooling</div>
+
+  <p class="lede">On a mission-critical communications program, I owned release engineering end to end for a team of three software integrators — carrying the largest share of prototype hardware — with <b>DevOps, CI/CD automation, and QA</b> all managed through Git and run daily in Linux and Bash. I built the tooling that packaged, versioned, and documented every release, then gated each one through a sanity-check process before it ever reached a lab or office. That work included <b>templated, portable release notes</b> that render anywhere, and <b>a one-click versioning tool</b> that replaced hours of manual work, alongside a stream of smaller scripts that removed everyday friction for the whole team.</p>
+
+  <section>
+    <div class="h2">§01 · The problem<span class="tag">before this existed</span></div>
+    <p>Release notes were written and maintained as Word documents — accurate, but painful to keep that way. Every release meant re-editing a formatted document by hand, and the result only worked well on a machine with Office installed and configured to match. That made it a poor fit for a lab floor: nobody wants to open a laptop and hunt for the right version of Word just to check what changed. It didn't display cleanly on shared lab screens, wasn't easy to pull up on a phone during a walk-through, and every editing pass risked breaking the formatting for the next person. Creating a new release was its own separate manual process — done by hand, one step at a time, with no tooling behind it.</p>
+    <p>Validation had the same gap: there was no agreed, written definition of what a release had to pass before it was trusted outside our own hands. Whether a build was actually ready for a lab or an office came down to whoever happened to test it that cycle, not a fixed standard.</p>
+  </section>
+
+  <section>
+    <div class="h2">§02 · What changed<span class="tag">before → after</span></div>
+    <div class="ba-wrap">
+      <div class="ba-panel before">
+        <div class="ba-label">Before</div>
+        <ul>
+          <li>Release notes hand-edited in Word each cycle</li>
+          <li>Needed Office installed to open or edit</li>
+          <li>Didn't render well on shared screens or phones</li>
+          <li>New versions created and packaged by hand</li>
+          <li>No fixed, written standard for what counted as "ready to ship"</li>
+        </ul>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-panel after">
+        <div class="ba-label">After</div>
+        <ul>
+          <li>Release notes built from an HTML template, editing only what changed</li>
+          <li>Converted to PDF by a Linux script — opens anywhere, no software required</li>
+          <li>Displayed cleanly on lab TVs, shared screens, and phones</li>
+          <li>New versions created, named, packaged, and encrypted with one command</li>
+          <li>Every release run through a written sanity-check spec before reaching a lab or office</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§03 · Portable release notes<span class="tag">HTML template → Linux render → PDF</span></div>
+    <p>I moved the release-note format from a Word document to a pre-built HTML template — the layout and tables stay fixed, and only the content that actually changes between releases gets edited. A Linux script then renders that HTML into a PDF automatically. A PDF opens identically on any device with no editing software required, so the same release note could go up on a lab TV, get shared in a group session on a shared computer, or get pulled up on someone's phone mid-conversation — something the old Word-based version never handled.</p>
+    <div class="pipeline">
+      <div class="step"><div class="num">01</div><h4>Edit content</h4><p>Only what changed this cycle — layout and tables stay fixed in the template.</p></div>
+      <div class="step"><div class="num">02</div><h4>Render HTML</h4><p>The template renders with the new content dropped in.</p></div>
+      <div class="step"><div class="num">03</div><h4>Convert to PDF</h4><p>A Linux script converts it automatically — no manual export step.</p></div>
+      <div class="step"><div class="num">04</div><h4>Distribute anywhere</h4><p>Lab TVs, shared computers, or phones — identical either way.</p></div>
+    </div>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">render-notes.sh</span><span>markdown → HTML → PDF</span></div>
+      <pre><code class="language-bash">cp release-notes.md release-notes.html
+
+wkhtmltopdf --encoding utf-8 \
+  --enable-local-file-access \
+  --user-style-sheet fonts.css \
+  release-notes.html "release-$version.pdf"
+
+rm release-notes.html
+echo "Release notes rendered: release-$version.pdf"</code></pre>
+    </div>
+    <p class="code-note">Reconstructed as a generic example — file names and paths from the real script have been replaced with invented equivalents. The actual render tool and pipeline shape match what I built.</p>
+  </section>
+
+  <section>
+    <div class="h2">§04 · Rethinking the format<span class="tag">a self-initiated redesign</span></div>
+    <p>Nobody asked for this part — the templating pipeline above was the actual assignment. But once the notes were portable, I kept looking at the format itself: a flat document of headed bullet lists and a plain table is accurate, but it doesn't tell you what to actually pay attention to. On my own time, I sketched a more visual alternative — status-driven sections instead of one long list, and a version table that flags what changed at a glance instead of making you read every row. The mockup below uses entirely placeholder data; it's meant to demonstrate the idea, not reproduce any real release.</p>
+
+    <div class="mock-frame">
+      <div class="mock-label"><span class="fname">release-notes-concept</span><span>placeholder data only</span></div>
+      <div class="mock-body">
+        <div class="mock-top">
+          <h4>Release v2.4.0</h4>
+          <span class="mock-badge">Concept mockup</span>
+        </div>
+        <div class="mock-cols">
+          <div class="mock-col hl">
+            <h5>Highlights</h5>
+            <ul>
+              <li>Faster cold-start on boot</li>
+              <li>New diagnostics panel in the dashboard</li>
+              <li>Config sync now runs automatically</li>
+            </ul>
+          </div>
+          <div class="mock-col fix">
+            <h5>Fixes</h5>
+            <ul>
+              <li>Resolved intermittent reconnect delay</li>
+              <li>Fixed race condition on config reload</li>
+              <li>Corrected timestamp drift in logs</li>
+            </ul>
+          </div>
+          <div class="mock-col lim">
+            <h5>Known limitations</h5>
+            <ul>
+              <li>Legacy client still needs a manual restart</li>
+              <li>Offline mode not yet supported on this build</li>
+            </ul>
+          </div>
+        </div>
+        <table class="mock-table">
+          <thead>
+            <tr><th>Component</th><th>Version</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>API Gateway</td><td>1.9.2</td><td><span class="mock-dot ok"></span>Stable</td></tr>
+            <tr><td>Auth Service</td><td>3.1.0</td><td><span class="mock-dot ok"></span>Stable</td></tr>
+            <tr><td>Sync Worker</td><td>0.8.4</td><td><span class="mock-dot watch"></span>Watch</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§05 · One-click versioning<span class="tag">a manual sequence → a single command</span></div>
+    <p>Creating a new release used to be a fully manual sequence. I built a tool that turns it into an interactive checklist: it walks through what's being included in the release, then on confirmation automatically names and numbers the new version in sequence, packages it, produces an encrypted build alongside the standard one, and generates that version's release note from the same HTML template — all from a single command instead of a manual, multi-step process.</p>
+    <div class="pipeline">
+      <div class="step"><div class="num">01</div><h4>Checklist</h4><p>Walks through what's included in this release.</p></div>
+      <div class="step"><div class="num">02</div><h4>Name &amp; number</h4><p>Auto-names and numbers the new version in sequence.</p></div>
+      <div class="step"><div class="num">03</div><h4>Package &amp; encrypt</h4><p>Builds the standard package plus an encrypted variant.</p></div>
+      <div class="step"><div class="num">04</div><h4>Generate notes</h4><p>Renders that version's release note from the template.</p></div>
+    </div>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">release-tool.sh</span><span>interactive menu loop</span></div>
+      <pre><code class="language-bash">select choice in "Create Release" "Create Release + Notes" "Update Version" "Quit"; do
+  case $REPLY in
+    1) create_release ;;
+    2) create_release && generate_notes ;;
+    3) update_version ;;
+    4) exit 0 ;;
+  esac
+done</code></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">release-tool.sh</span><span>version, package, encrypt</span></div>
+      <pre><code class="language-bash">current_version=$(cat VERSION.txt)
+read -p "New version (current: $current_version): " new_version
+sed -i "s/$current_version/$new_version/" VERSION.txt
+
+echo "Packaging release $new_version..."
+tar -czf "release-$new_version.tar.gz" build/
+gpg --symmetric --batch --passphrase-file .release_key "release-$new_version.tar.gz"
+
+echo "Rendering release notes..."
+./render-notes.sh templates/release-notes.html > "release-$new_version-notes.pdf"
+
+echo "Release $new_version packaged and encrypted."</code></pre>
+    </div>
+    <p class="code-note">Reconstructed as a generic example — component names, upload targets, and internal tooling from the real script have been replaced with invented equivalents to protect proprietary details. The structure and logic (interactive checklist → version bump → package → encrypt → generate notes) match what I actually built.</p>
+  </section>
+
+  <section>
+    <div class="h2">§06 · Distribution<span class="tag">curl · Basic Auth · artifact repository</span></div>
+    <p>Once a release was packaged, it still had to reach an internal artifact repository — by hand, that meant logging in and dragging files through a browser every cycle. I scripted the upload: it prompts for credentials once, then loops through every packaged file and pushes it over HTTP with Basic Auth, checking the response code so a failed upload is never mistaken for a successful one.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">upload-artifact.sh</span><span>credentialed loop upload</span></div>
+      <pre><code class="language-bash">read -p "Username: " username
+read -s -p "Password: " password; echo
+credentials=$(printf "%s:%s" "$username" "$password" | base64)
+
+for file in build/*.tar.gz; do
+  echo "Uploading $file..."
+  status=$(curl -s -o /dev/null -w "%{http_code}" \
+    -H "Authorization: Basic $credentials" \
+    -T "$file" "$ARTIFACT_REPO_URL/")
+
+  if [ "$status" -eq 201 ]; then
+    echo "Success"
+  else
+    echo "Upload failed (HTTP $status)"
+  fi
+done</code></pre>
+    </div>
+    <p class="code-note">Reconstructed as a generic example — the real repository URL and credentials handling have been replaced with a placeholder. The upload logic and status-checking behavior match what I built.</p>
+  </section>
+
+  <section>
+    <div class="h2">§07 · Everyday scripting<span class="tag">Python · Bash</span></div>
+    <p>Beyond the two larger tools, I wrote a steady stream of smaller Python and Bash scripts aimed at removing day-to-day friction — for myself and for the other integrators on the team. As one of three integrators covering the most prototype hardware on the team, small time sinks repeated across every unit added up fast. One example: checking whether a given process was actually alive on a prototype used to mean checking it manually, one at a time — I wrote a status script that reads the expected process list from a config file and reports every one at once with a clear <code>running</code>/<code>NOT running</code> label, color-coded green or red.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">status-check.sh</span><span>process status, at a glance</span></div>
+      <pre><code class="language-bash">proc_names=$(grep 'command=' "$CONFIG_FILE" | sed -n 's/.*command="\([^"]*\)".*/\1/p' | awk -F'/' '{print $NF}')
+
+for proc in $proc_names; do
+  if pgrep -x "$proc" > /dev/null; then
+    printf "%-15s ----- \e[32m%s\e[0m\n" "$proc" "running"
+  else
+    printf "%-15s ----- \e[31m%s\e[0m\n" "$proc" "NOT running"
+  fi
+done</code></pre>
+    </div>
+
+    <p>Provisioning a batch of similar units also meant giving each one a distinct network identity — by hand, that meant editing multiple config files per unit and keeping the numbering consistent across all of them. I scripted it: give the tool a unit ID, and it derives the correct subnet address from that ID and writes it into every config file that needs it, so a unit is fully addressable on the network from a single command instead of a manual per-file edit.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">set-unit-id.sh</span><span>derive address from ID, propagate to configs</span></div>
+      <pre><code class="language-bash">unit_id=$1
+
+# Derive a subnet address from the numeric unit ID
+octet_3=$(( unit_id / 100 ))
+octet_4=$(( unit_id % 100 ))
+new_addr="10.${octet_3}.${octet_4}"
+
+echo "Assigning unit ID $unit_id → address $new_addr"
+
+# Propagate the new address to every config file that references it
+for config_file in /etc/network/interfaces /etc/dhcp/dhcpd.conf; do
+  sed -i "s/10\.[0-9]*\.[0-9]*/${new_addr}/g" "$config_file"
+done
+
+echo "$unit_id" > /etc/unit/unit-id.conf
+echo "Unit $unit_id provisioned at $new_addr"</code></pre>
+    </div>
+
+    <p>Port conflicts on shared lab hardware were another recurring headache — two people spinning up services on the same box with no easy way to see what was already taken. I wrote a scanner that checks a port, a single range, or a full default range, and reports only what's actually in use, with the owning process name alongside it.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">check-ports.sh</span><span>find what's already in use</span></div>
+      <pre><code class="language-bash">check_port() {
+  local port=$1
+  local result=$(netstat -paun 2>/dev/null | grep ":$port ")
+  if [ -n "$result" ]; then
+    local process=$(echo "$result" | awk '{print $NF}')
+    echo "Port $port ($process) is in use"
+  fi
+}
+
+if [ $# -eq 0 ]; then
+  for port in $(seq "$PORT_MIN" "$PORT_MAX"); do check_port "$port"; done
+elif [ $# -eq 1 ]; then
+  check_port "$1"
+else
+  for port in $(seq "$1" "$2"); do check_port "$port"; done
+fi</code></pre>
+    </div>
+
+    <p>Hardware validation was another area worth automating rather than doing by eye. One prototype's security module occasionally failed to initialize on boot — usually recoverable with a single reboot, but not always. I wrote a check that detects the module, tries exactly one automatic reboot if it's missing, and then fails loudly and stops retrying if it's still missing afterward, so a real hardware fault gets flagged instead of silently reboot-looping.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">check-security-module.sh</span><span>detect → retry once → flag</span></div>
+      <pre><code class="language-bash">module_exists() { [[ -e /dev/tpm0 ]]; }
+
+if module_exists; then
+  touch "$OK_FLAG"
+  exit 0
+fi
+
+if [ ! -e "$OK_FLAG" ]; then
+  echo "$(date) module not found, retrying once via reboot" >> "$LOG_FILE"
+  touch "$OK_FLAG"
+  reboot
+fi
+
+echo "$(date) module still missing after reboot — flagging failure" >> "$LOG_FILE"
+rm -f "$OK_FLAG"
+exit 1</code></pre>
+    </div>
+    <p class="code-note">File paths and config field names have been generalized; the logic in all four (process parsing, ID-to-address derivation, port scanning, and single-retry hardware recovery) matches what I built.</p>
+  </section>
+
+  <section>
+    <div class="h2">§08 · Validation &amp; impact<span class="tag">quality bar, day to day</span></div>
+    <div class="two-col">
+      <div class="block">
+        <h3>Validation</h3>
+        <p>Every master version I built had to clear a sanity-check spec I wrote together with my team lead — a fixed, agreed set of checks run on our own prototype hardware before anything moved further. I ran that suite myself on every release. A clean pass meant the build moved on to the labs and offices; a failure meant I dug in to find and fix the cause myself. When the root cause sat outside what I owned, I looped in whoever did own that piece and worked the fix through with them rather than guessing — so nothing shipped past us without either passing outright or being properly understood first.</p>
+      </div>
+      <div class="block">
+        <h3>Internal &amp; customer-facing support</h3>
+        <p>Provided ongoing hands-on support to lab colleagues and engineering teams working with these releases day to day, and traveled internationally to support customers directly on-site — deployment, troubleshooting, and training on our products in the field.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§09 · Skills</div>
+    <div class="stack-tags">
+      <span>Python</span><span>Bash</span><span>Linux</span><span>HTML/CSS templating</span>
+      <span>Automated PDF generation</span><span>Release &amp; version management</span>
+      <span>Encryption tooling</span>
+      <span>Cross-functional collaboration</span><span>On-site technical support</span>
+    </div>
+  </section>
+
+  <footer>
+    <span>Rafael Advanced Defense Systems — Roei Gamliel</span>
+    <a href="index.html">← back to roeigam.github.io</a>
+  </footer>
+
+</div>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
