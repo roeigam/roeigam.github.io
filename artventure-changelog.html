@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtVenture — Release Notes — Roei Gamliel</title>
+<meta name="description" content="ArtVenture development changelog, v0.1.0 – v0.6.0: what shipped, what broke and was fixed, and the decisions made along the way.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/default-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+<style>
+
+  :root{
+    --bg:#0B1416; --panel:#121E21; --panel-raise:#17262A; --code-bg:#080F11;
+    --ink:#EDF5F4; --ink-soft:#9FB9BA; --ink-faint:#5C7476;
+    --line:#213538; --line-soft:#1A2B2E;
+    --teal:#3FDCB8; --violet:#8D7CF5; --red:#E2775A; --amber:#D9A94F;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:1.65; }
+  ::selection{ background:var(--violet); color:#0B1416; }
+
+  .aurora-bar{ height:4px; width:100%; background:linear-gradient(90deg, var(--teal), var(--violet) 60%, #C084F5); }
+
+  .wrap{ max-width:1240px; margin:0 auto; padding:10vw 6vw 12vw 6vw; }
+  @media(min-width:700px){ .wrap{ padding:56px 44px 100px 44px; } }
+
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--teal); margin-bottom:28px; display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap; }
+  .eyebrow .meta{ color:var(--ink-faint); }
+  .back{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-faint); text-decoration:none; border-bottom:1px solid transparent; }
+  .back:hover{ color:var(--teal); border-bottom-color:var(--teal); }
+
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:56px; line-height:1.0; letter-spacing:-0.015em; margin:0 0 12px 0; }
+  @media(min-width:700px){ h1{ font-size:72px; } }
+  .role{ font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink-soft); letter-spacing:0.02em; margin-bottom:26px; }
+  p.lede{ font-size:19px; color:var(--ink-soft); max-width:80ch; margin:0 0 40px 0; }
+  p.lede b{ color:var(--teal); font-weight:600; }
+
+  section{ margin-bottom:64px; }
+  .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); border-bottom:1px solid var(--line); padding-bottom:10px; margin:0 0 26px 0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+  .h2 .tag{ color:var(--ink-faint); font-weight:500; text-transform:none; letter-spacing:0; }
+
+  /* Component versions table */
+  .ver-table{ width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:13.5px; }
+  .ver-table th{ text-align:left; color:var(--ink-faint); font-weight:500; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; padding:10px 14px; border-bottom:1px solid var(--line); }
+  .ver-table td{ padding:11px 14px; border-bottom:1px solid var(--line-soft); color:var(--ink-soft); }
+  .ver-table td.cname{ color:var(--ink); }
+  .ver-table tr:hover td{ background:var(--panel); }
+
+  /* Quick nav chips */
+  .ver-nav{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 10px 0; }
+  .ver-nav a{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-soft); background:var(--panel); border:1px solid var(--line); padding:7px 14px; text-decoration:none; transition:border-color .15s ease, color .15s ease; }
+  .ver-nav a:hover{ color:var(--teal); border-color:var(--teal); }
+
+  /* Version entries */
+  .version{ padding-top:40px; margin-top:20px; border-top:1px solid var(--line); scroll-margin-top:24px; }
+  .version:first-of-type{ border-top:none; padding-top:0; }
+  .ver-head{ display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
+  .ver-head h2{ font-family:'Space Grotesk',sans-serif; font-size:30px; margin:0; color:var(--ink); }
+  .ver-head .ver-touch{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-faint); }
+  .version > p.summary{ color:var(--ink-soft); max-width:90ch; margin:0 0 22px 0; }
+
+  .log-groups{ display:grid; grid-template-columns:1fr; gap:20px; margin-bottom:22px; }
+  @media(min-width:800px){ .log-groups{ grid-template-columns:repeat(2,1fr); } }
+  .log-col{ border-left:2px solid var(--line); padding-left:16px; }
+  .log-col.added{ border-left-color:var(--teal); }
+  .log-col.fixed{ border-left-color:var(--violet); }
+  .log-col.security{ border-left-color:var(--red); }
+  .log-col.gaps{ border-left-color:var(--amber); }
+  .log-col h5{ font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase; margin:0 0 10px 0; color:var(--ink); }
+  .log-col ul{ margin:0; padding-left:18px; color:var(--ink-soft); font-size:14.5px; line-height:1.75; }
+  .log-col li{ margin-bottom:8px; }
+  .log-col li:last-child{ margin-bottom:0; }
+  .log-col code{ font-family:'JetBrains Mono',monospace; font-size:0.92em; background:rgba(141,124,245,0.14); color:var(--violet); padding:1px 6px; border-radius:3px; }
+
+  /* Code card (reused) */
+  .code-card{ background:var(--code-bg); border:1px solid var(--line); margin:10px 0 22px 0; overflow:hidden; }
+  .code-card .cc-head{ display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12px; color:#6F8A8C; flex-wrap:wrap; gap:6px; }
+  .code-card .cc-head .fname{ color:var(--teal); }
+  .code-card pre{ margin:0; padding:16px 20px; overflow-x:auto; }
+  .code-card code.hljs{ background:transparent !important; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.7; padding:0; }
+  .code-note{ font-family:'IBM Plex Sans',sans-serif; font-size:13.5px; color:var(--ink-faint); margin:-6px 0 20px 0; padding-left:16px; border-left:2px solid var(--violet); font-style:italic; }
+
+  footer{ margin-top:80px; padding-top:24px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer a{ color:var(--ink-faint); }
+
+</style>
+</head>
+<body>
+<div class="aurora-bar"></div>
+<div class="wrap">
+
+  <div class="eyebrow">
+    <a class="back" href="index.html">← roeigam.github.io</a>
+    <span class="meta">Solo project · ongoing</span>
+  </div>
+
+  <h1>Release Notes</h1>
+  <div class="role">ArtVenture · Development Changelog · v0.1.0 – v0.6.0</div>
+
+  <p class="lede">The changelog I keep for ArtVenture across its first six releases — from an Iceland-only baseline to opening the library to anonymous visitors. Each entry documents <b>what shipped, what broke and was fixed, and the decisions made along the way</b>, in the format I actually use to track the project.</p>
+
+  <section>
+    <div class="h2">Current component versions</div>
+    <table class="ver-table">
+      <thead><tr><th>Component</th><th>Version</th></tr></thead>
+      <tbody>
+        <tr><td class="cname">Application</td><td>0.6.0</td></tr>
+        <tr><td class="cname">Guest Access</td><td>1.0.0</td></tr>
+        <tr><td class="cname">Trip Cover Image Security</td><td>1.0.0</td></tr>
+        <tr><td class="cname">Reporting</td><td>1.0.0</td></tr>
+        <tr><td class="cname">Navigation Shell</td><td>1.1.0</td></tr>
+        <tr><td class="cname">MVP Feature Flags</td><td>1.0.0</td></tr>
+        <tr><td class="cname">Library Explorer UI</td><td>1.0.0</td></tr>
+        <tr><td class="cname">Region Assignment Engine</td><td>1.1.0</td></tr>
+        <tr><td class="cname">Block Discovery Pipeline</td><td>1.2.0</td></tr>
+        <tr><td class="cname">Blocks Service &amp; API</td><td>1.0.1</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="h2">Jump to a version</div>
+    <div class="ver-nav">
+      <a href="#v060">v0.6.0</a><a href="#v050">v0.5.0</a><a href="#v040">v0.4.0</a>
+      <a href="#v030">v0.3.0</a><a href="#v020">v0.2.0</a><a href="#v010">v0.1.0</a>
+    </div>
+  </section>
+
+  <section>
+
+    <div class="version" id="v060">
+      <div class="ver-head"><h2>v0.6.0</h2><span class="ver-touch">Guest Access · Trip Cover Image Security — new · Navigation Shell 1.0.0 → 1.1.0</span></div>
+      <p class="summary">Opens the Library to anonymous visitors (browse freely, sign-in only prompted on actual write actions), restricts trip cover images to an explicit host allowlist instead of any URL, and closes two real deployment gaps found while auditing for launch. Also finalizes two decisions previously left open: countries in scope (Iceland + Germany, both real, permanently), and auth strategy (accounts required for trip creation, permanently — not a deferral).</p>
+      <div class="log-groups">
+        <div class="log-col added">
+          <h5>Added</h5>
+          <ul>
+            <li><b>Guest Access</b> — <code>/library</code> and its sub-routes opened to anonymous visitors, previously redirected to login before browsing at all. Attempting a write action (save, add to day) while signed out now opens a sign-in prompt instead of silently failing.</li>
+            <li><b>Trip Cover Image Security</b> — the cover image field was a free-text URL with no host restriction. Added an explicit allowlist enforced server-side on create/update, plus client-side for immediate feedback; the image-optimizer config now generates from the same allowlist instead of a separately hardcoded one, so the two can't drift.</li>
+            <li>A pre-launch checklist tracking everything still needing manual action before going live — credential hygiene, production OAuth redirect URI, host choice, repo visibility, and a parked note on anonymous shareable trip links.</li>
+          </ul>
+        </div>
+        <div class="log-col fixed">
+          <h5>Fixed — both deploy-breaking</h5>
+          <ul>
+            <li>No <code>postinstall</code> script, so a fresh install on a deploy host would never generate the Prisma client.</li>
+            <li>The Report table (added in v0.5.0) only existed via a direct schema push, no migration file — a clean migration deploy against a fresh database would have silently skipped it. Added the missing migration, marked applied against the existing database with no data touched.</li>
+            <li>Navigation Shell (1.1.0) — the marketing nav overlapped the top bar and hid "My Trips" for logged-in users on the home page. Simplified to a lightweight marketing-only bar.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code-card">
+        <div class="cc-head"><span class="fname">package.json</span><span>the actual one-line fix</span></div>
+        <pre><code class="language-javascript">"scripts": {
+  "postinstall": "prisma generate"
+}</code></pre>
+      </div>
+
+      <div class="log-groups">
+        <div class="log-col">
+          <h5>Data &amp; docs</h5>
+          <ul>
+            <li>Removed a small number of leftover test entries from the public library, confirmed via direct query to have zero references elsewhere first.</li>
+            <li>Corrected a factual error in the planning doc: one country was assumed to have only a few leftover test places — verified directly against the live database instead, it has 150 real, deliberately-built places. Nothing gets pruned.</li>
+          </ul>
+        </div>
+        <div class="log-col gaps">
+          <h5>Known gaps</h5>
+          <ul>
+            <li>The Report migration gap is closed, but an unrelated migration-history drift noted in v0.5.0 is still unresolved.</li>
+            <li>The country dropdown still lists dozens of world countries with no library content behind them — tracked in the pre-launch checklist, not urgent while usage is internal-only.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="version" id="v050">
+      <div class="ver-head"><h2>v0.5.0</h2><span class="ver-touch">Reporting · Navigation Shell — new</span></div>
+      <p class="summary">Closes the last missing piece of the original MVP core loop — the flag/report button — and replaces the sidebar with a top navigation bar. Also fixes a bug that would have silently broken every image added by v0.3.0's data work.</p>
+      <div class="log-groups">
+        <div class="log-col added">
+          <h5>Added</h5>
+          <ul>
+            <li><b>Reporting</b> — a report model with reason categories (wrong hours, permanently closed, not worth it, other), a public endpoint requiring no login, and a "Something wrong?" dialog on place detail views. Read directly from the database for now — no admin UI yet, matching MVP scope.</li>
+            <li><b>Navigation Shell</b> — desktop sidebar removed; navigation now lives in the top bar. Mobile's bottom nav untouched.</li>
+          </ul>
+        </div>
+        <div class="log-col fixed">
+          <h5>Fixed</h5>
+          <ul>
+            <li>The image optimizer only whitelisted one image host — every photo added by v0.3.0's data work would have failed to render. Added the two other real sources in use.</li>
+            <li>Two fixed-position elements in the day builder had left-offsets calibrated to dodge the now-removed sidebar. Adjusted both.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="log-groups">
+        <div class="log-col security">
+          <h5>Security</h5>
+          <ul>
+            <li>Local environment config files had been tracked in version control. Untracked them and corrected <code>.gitignore</code>. Full credential rotation tracked separately as pre-launch hardening.</li>
+            <li>Rewrote git history to remove an incorrect co-author attribution on one commit.</li>
+          </ul>
+        </div>
+        <div class="log-col gaps">
+          <h5>Known gaps</h5>
+          <ul>
+            <li>The Report model was applied via direct schema push — the standard migration path detected pre-existing, unrelated drift and wanted to reset the entire database, which was refused. Zero data loss, but no migration file exists for this table yet.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="version" id="v040">
+      <div class="ver-head"><h2>v0.4.0</h2><span class="ver-touch">MVP Feature Flags — new</span></div>
+      <p class="summary">Reduces the app's surface down to the confirmed MVP core loop (browse → add to day → build → see a verdict), after an internal audit found most of the MVP already works but is surrounded by extra features built alongside it (a marketplace, a multi-country explore picker, a live on-trip mode, a route optimizer). Nothing is deleted — every hidden surface sits behind one feature-flag file and can be restored with a one-line change.</p>
+      <div class="log-groups">
+        <div class="log-col added">
+          <h5>Added</h5>
+          <ul><li><b>MVP Feature Flags</b> — a single source of truth for which non-core surfaces are hidden. Every hide this release is a conditional render guarded by a flag, never a deletion.</li></ul>
+        </div>
+        <div class="log-col">
+          <h5>Changed</h5>
+          <ul>
+            <li>Hid "Explore" and "Marketplace" nav items — only Library and My Trips remain visible.</li>
+            <li>Library Explorer — hid Personal and Discovery tabs, only Global remains.</li>
+            <li>Trip overview — hid "Start Trip" (live on-trip companion); kept the Grey Board panel visible.</li>
+            <li>Day builder — hid "Optimize Route" (violated the product's own "warn, never auto-fix" principle) and "Suggest Accommodation."</li>
+            <li>Landing page — repointed all "Explore" CTAs to the working global library page instead of the now-hidden picker.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="version" id="v030">
+      <div class="ver-head"><h2>v0.3.0</h2><span class="ver-touch">Block Discovery Pipeline 1.1.0 → 1.2.0</span></div>
+      <p class="summary">Brings Iceland's library up to the same real-data standard as Germany's. Found along the way that Iceland's public library was 88% template-generated mock data approved into production by mistake, and that 0% of blocks in either country had real images — a silent merge bug plus a missing HTTP header were quietly zeroing out every discovery request. Fixes both, adds real image sourcing, and hardens the pipeline against two quota-wasting failure modes found by running it for real.</p>
+      <div class="log-groups">
+        <div class="log-col added">
+          <h5>Added</h5>
+          <ul>
+            <li>Google Places Photos support, resolved to a servable image URL during discovery.</li>
+            <li>A name-based filter blocking image search for generic labels ("Viewpoint N," "Church") after these confidently returned unrelated photos.</li>
+            <li>A pre-enrichment cap per category, after one query type returned nearly 3,000 raw results against an 80-place ceiling.</li>
+            <li>A reusable backfill script attaching real images to already-approved blocks with none.</li>
+          </ul>
+        </div>
+        <div class="log-col fixed">
+          <h5>Fixed</h5>
+          <ul>
+            <li>The dedup path taken by most places never surfaced a resolved image to the merged record — any image found during discovery was silently discarded before import. Root cause of 0% image coverage.</li>
+            <li>The OSM fetcher was rejected on every request due to missing headers — zero OSM results ever made it into a pipeline run, invisibly.</li>
+            <li>Google Places quota exhaustion previously crashed the entire run rather than degrading gracefully. Both paths now continue without further calls to that source, falling back to Wikimedia.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code-card">
+        <div class="cc-head"><span class="fname">discovery-pipeline.ts</span><span>illustrative — quota exhaustion handling</span></div>
+        <pre><code class="language-javascript">try {
+  const photo = await googlePlacesPhoto(candidate);
+  return attachImage(candidate, photo);
+} catch (err) {
+  if (isQuotaExhausted(err)) {
+    quotaExhausted = true; // stop calling this source for the rest of the run
+    return attachImage(candidate, await wikimediaFallback(candidate));
+  }
+  throw err;
+}</code></pre>
+      </div>
+      <p class="code-note">Illustrative — reconstructed from the description above to show the shape of the fix, not a copied diff.</p>
+
+      <div class="log-groups">
+        <div class="log-col">
+          <h5>Data</h5>
+          <ul>
+            <li>Removed 484 template-generated mock blocks approved into Iceland's live library by mistake.</li>
+            <li>Backfilled images: Germany 149/150 (99.3%), Iceland ~115/328 after removing 10 confirmed wrong matches.</li>
+            <li>Net effect: Iceland's live library grew from 65 real blocks to 328.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="version" id="v020">
+      <div class="ver-head"><h2>v0.2.0</h2><span class="ver-touch">Library Explorer UI — new · Region Assignment 1.0.0 → 1.1.0</span></div>
+      <p class="summary">Adds country/region-based browsing to the Global Library and extends discovery beyond its original Iceland-only scope, fixing two multi-country bugs uncovered while onboarding Germany as the platform's second fully-populated country (150 attractions across 8 regions).</p>
+      <div class="log-groups">
+        <div class="log-col added">
+          <h5>Added</h5>
+          <ul>
+            <li>Country and region dropdowns on the global library page, replacing the old single-country filter.</li>
+            <li>Germany added as a supported country, targeting 6 states initially; bounding boxes added for all 16 so any discovered place resolves to an accurate region.</li>
+          </ul>
+        </div>
+        <div class="log-col fixed">
+          <h5>Fixed</h5>
+          <ul>
+            <li>Region resolution hardcoded a single country as fallback regardless of which was actually being processed — silently mislabeling every other country's places.</li>
+            <li>Country values stored an ISO code instead of the display name used everywhere else, silently splitting one country's data into two disconnected buckets.</li>
+            <li>The region-lookup query used a filter pattern the ORM's newer version rejects outright — broke the region endpoint for every country, not just new ones.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="version" id="v010">
+      <div class="ver-head"><h2>v0.1.0</h2><span class="ver-touch">Baseline</span></div>
+      <p class="summary">Baseline release predating this changelog: Iceland-focused AI trip-planning platform — trip building, Mapbox routing, curated block library, discovery pipeline for Iceland.</p>
+    </div>
+
+  </section>
+
+  <footer>
+    <span>ArtVenture — Roei Gamliel</span>
+    <a href="index.html">← back to roeigam.github.io</a>
+  </footer>
+
+</div>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
