@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtVenture — Software Development Case Study — Roei Gamliel</title>
+<meta name="description" content="ArtVenture: a deterministic trip-planning engine. Route optimization, day-battery heuristics, and feasibility validation — with real code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/default-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<style>
+
+  :root{
+    --bg:#0B1416; --panel:#121E21; --panel-raise:#17262A; --code-bg:#080F11;
+    --ink:#EDF5F4; --ink-soft:#9FB9BA; --ink-faint:#5C7476;
+    --line:#213538; --line-soft:#1A2B2E;
+    --teal:#3FDCB8; --violet:#8D7CF5; --red:#E2775A; --amber:#D9A94F;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:1.65;
+  }
+  ::selection{ background:var(--violet); color:#0B1416; }
+
+  .aurora-bar{ height:4px; width:100%; background:linear-gradient(90deg, var(--teal), var(--violet) 60%, #C084F5); }
+
+  .wrap{ max-width:1240px; margin:0 auto; padding:10vw 6vw 12vw 6vw; }
+  @media(min-width:700px){ .wrap{ padding:56px 44px 100px 44px; } }
+
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--teal); margin-bottom:28px; display:flex; align-items:center; gap:10px; justify-content:space-between; }
+  .eyebrow .status{ color:var(--amber); }
+  .eyebrow .status::before{ content:"● "; }
+  .back{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-faint); text-decoration:none; border-bottom:1px solid transparent; }
+  .back:hover{ color:var(--teal); border-bottom-color:var(--teal); }
+
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:56px; line-height:1.0; letter-spacing:-0.015em; margin:0 0 12px 0; }
+  @media(min-width:700px){ h1{ font-size:72px; } }
+  .role{ font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink-soft); letter-spacing:0.02em; margin-bottom:26px; }
+
+  p.lede{ font-size:19px; color:var(--ink-soft); max-width:62ch; margin:0 0 40px 0; }
+  p.lede b{ color:var(--teal); font-weight:600; }
+
+  /* Hero banner */
+  .hero-shot{ position:relative; margin:0 0 50px 0; border:1px solid var(--line); background:var(--panel); }
+  .hero-shot a{ display:block; line-height:0; }
+  .hero-shot img{ display:block; width:100%; height:auto; }
+  .hero-cap{ display:flex; justify-content:space-between; gap:16px; padding:12px 18px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); border-top:1px solid var(--line); flex-wrap:wrap; }
+  .hero-cap b{ color:var(--ink-soft); font-weight:500; }
+
+  .stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px 10px; padding:26px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line-soft); margin-bottom:64px; }
+  @media(min-width:600px){ .stats{ grid-template-columns:repeat(6,1fr); } }
+  .stat b{ display:block; font-family:'Space Grotesk',sans-serif; font-size:30px; font-weight:700; color:var(--teal); }
+  .stat span{ font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); }
+
+  section{ margin-bottom:72px; }
+  .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); border-bottom:1px solid var(--line); padding-bottom:10px; margin:0 0 26px 0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+  .h2 .tag{ color:var(--ink-faint); font-weight:500; text-transform:none; letter-spacing:0; }
+
+  section > p{ color:var(--ink-soft); max-width:70ch; margin:0 0 18px 0; }
+  section > p b{ color:var(--ink); font-weight:600; }
+  section > p code, li code, .ftext p code{ font-family:'JetBrains Mono',monospace; font-size:0.9em; background:rgba(141,124,245,0.14); color:var(--violet); padding:1px 6px; border-radius:3px; }
+
+  .stack-tags{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 20px 0; }
+  .stack-tags span{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-soft); background:var(--panel); border:1px solid var(--line); padding:6px 12px; }
+
+  /* Code card */
+  .code-card{ background:var(--code-bg); border:1px solid var(--line); margin:20px 0 28px 0; overflow:hidden; }
+  .code-card .cc-head{ display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12px; color:#6F8A8C; }
+  .code-card .cc-head .fname{ color:var(--teal); }
+  .code-card pre{ margin:0; padding:18px 20px; overflow-x:auto; }
+  .code-card code.hljs{ background:transparent !important; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.7; padding:0; }
+  .code-note{ font-family:'IBM Plex Sans',sans-serif; font-size:14.5px; color:var(--ink-soft); margin:-12px 0 24px 0; padding-left:16px; border-left:2px solid var(--violet); }
+
+  .verdict-box{ font-family:'JetBrains Mono',monospace; font-size:13.5px; background:var(--code-bg); color:#BCD1D2; border:1px solid var(--line); padding:18px 20px; margin:20px 0 24px 0; line-height:1.95; overflow-x:auto; white-space:pre; }
+  .verdict-box .red{ color:var(--red); font-weight:700; }
+  .verdict-box .dim{ color:#4F6567; }
+
+  .two-col{ display:grid; grid-template-columns:1fr; gap:26px; }
+  @media(min-width:700px){ .two-col{ grid-template-columns:1fr 1fr; } }
+  .two-col .block{ background:var(--panel); border:1px solid var(--line); padding:20px 22px; }
+  .two-col .block h3{ font-family:'Space Grotesk',sans-serif; font-size:16.5px; margin:0 0 8px 0; color:var(--ink); }
+  .two-col .block p{ font-size:14.5px; margin:0; color:var(--ink-soft); }
+
+  /* Feature rows: big image + caption, alternating sides */
+  .feature-row{ display:grid; grid-template-columns:1fr; gap:20px; align-items:center; margin:8px 0 46px 0; }
+  @media(min-width:800px){
+    .feature-row{ grid-template-columns:1.35fr 1fr; gap:44px; }
+    .feature-row.reverse{ grid-template-columns:1fr 1.35fr; }
+    .feature-row.reverse .fshot{ order:2; }
+    .feature-row.reverse .ftext{ order:1; }
+  }
+  .fshot{ background:var(--panel); border:1px solid var(--line); }
+  .fshot a{ display:block; line-height:0; position:relative; }
+  .fshot img{ display:block; width:100%; height:auto; cursor:zoom-in; }
+  .fshot a::after{ content:"⤢ open full size"; position:absolute; right:10px; bottom:10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#EDF5F4; background:rgba(8,15,17,0.78); padding:4px 8px; opacity:0; transition:opacity .15s ease; }
+  .fshot a:hover::after{ opacity:1; }
+  .ftext .fig-label{ font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--teal); margin-bottom:8px; }
+  .ftext h3{ font-family:'Space Grotesk',sans-serif; font-size:22px; margin:0 0 10px 0; color:var(--ink); }
+  .ftext p{ font-size:15px; color:var(--ink-soft); margin:0; line-height:1.6; }
+
+  footer{ margin-top:80px; padding-top:24px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer a{ color:var(--ink-faint); }
+
+</style>
+</head>
+<body>
+<div class="aurora-bar"></div>
+<div class="wrap">
+
+  <div class="eyebrow">
+    <a class="back" href="index.html">← roeigam.github.io</a>
+    <span class="status">in active development</span>
+  </div>
+
+  <h1>ArtVenture</h1>
+  <div class="role">Software Development Case Study · Route Optimization &amp; Feasibility Engine</div>
+
+  <p class="lede">A trip-planning platform built around one question every travel app quietly guesses at: <b>will this day actually work</b> — given real drive times, real opening hours, and Iceland's extreme daylight swings. ArtVenture computes the answer deterministically instead of guessing.</p>
+
+  <div class="hero-shot">
+    <a href="assets/home.png" target="_blank" rel="noopener">
+      <img src="assets/home.png" alt="ArtVenture marketing homepage">
+    </a>
+    <div class="hero-cap"><span><b>ArtVenture</b> — home</span><span>click to open full size</span></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>74K</b><span>Lines of code</span></div>
+    <div class="stat"><b>307</b><span>Source files</span></div>
+    <div class="stat"><b>48</b><span>API routes</span></div>
+    <div class="stat"><b>15</b><span>Data models</span></div>
+    <div class="stat"><b>6</b><span>External APIs</span></div>
+    <div class="stat"><b>152</b><span>Test files</span></div>
+  </div>
+
+  <section>
+    <div class="h2">§01 · The core idea<span class="tag">determinism as the product</span></div>
+    <p>Every planner lets you drag places onto a calendar — none tell you, with confidence, whether the day you just built is actually achievable. ArtVenture's feasibility engine doesn't guess: given a start time and an ordered list of stops, it walks the chain — each arrival is the previous departure plus drive time, each departure is arrival plus that stop's visit duration — and checks the result against opening hours, timed bookings, and daylight.</p>
+    <div class="verdict-box">09:00  Depart accommodation                                    day start
+09:45  Arrive Seljalandsfoss                                <span class="dim">45 min drive</span>
+10:45  Depart Seljalandsfoss                                <span class="dim">60 min visit</span>
+11:15  Arrive Skógafoss                                     <span class="dim">30 min drive</span>
+12:30  Depart Skógafoss                                     <span class="dim">75 min visit</span>
+13:20  Arrive ice cave tour (booked 13:00)                  <span class="red">RED — 20 MIN LATE</span></div>
+    <p>The engine returns a verdict — <code>GREEN</code> / <code>YELLOW</code> / <code>RED</code> — with the specific reason, never a vague warning. It never auto-fixes; the traveler keeps the judgment, the system gives the evidence.</p>
+  </section>
+
+  <section>
+    <div class="h2">§02 · Stack<span class="tag">four layers, one deterministic core</span></div>
+    <div class="stack-tags">
+      <span>Next.js 16</span><span>React 19</span><span>TypeScript</span><span>Tailwind CSS 4</span>
+      <span>Mapbox GL</span><span>TanStack Query</span><span>Prisma 7</span><span>PostgreSQL (Supabase)</span>
+      <span>NextAuth 5</span><span>Stripe</span><span>Vitest</span>
+    </div>
+    <p>A conventional full-stack shape carries an unconventional core: a route optimizer and a rules-based verdict engine sitting where most trip apps would just render a map on top of someone else's routing API.</p>
+  </section>
+
+  <section>
+    <div class="h2">§03 · The product surface<span class="tag">home.png · library.png · my-trips.png</span></div>
+
+    <div class="feature-row">
+      <div class="fshot">
+        <a href="assets/library.png" target="_blank" rel="noopener">
+          <img src="assets/library.png" alt="ArtVenture library search with filters and confidence scores">
+        </a>
+      </div>
+      <div class="ftext">
+        <div class="fig-label">Fig. 02 — Library</div>
+        <h3>10,000+ places, filtered</h3>
+        <p>Discovery library filtered by country, region, and category. The percentage badge on each card is a confidence score surfaced from the discovery pipeline that merges four different place-data sources into one record.</p>
+      </div>
+    </div>
+
+    <div class="feature-row reverse">
+      <div class="fshot">
+        <a href="assets/my-trips.png" target="_blank" rel="noopener">
+          <img src="assets/my-trips.png" alt="ArtVenture My Trips dashboard">
+        </a>
+      </div>
+      <div class="ftext">
+        <div class="fig-label">Fig. 03 — My Trips</div>
+        <h3>Every trip, at a glance</h3>
+        <p>Drafts, dates, and status surfaced up front, sortable by recency, upcoming date, or name.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§04 · Route optimization<span class="tag">optimizer.ts · detour.ts</span></div>
+    <p>Reordering a day's stops is a small traveling-salesman problem. Rather than reach for a heavy solver, I used a <b>nearest-neighbor heuristic</b>: keep the starting point fixed, then repeatedly jump to whichever unvisited stop is closest by actual travel time. It's not globally optimal, but it's fast, predictable, and good enough for the &lt;10-stop days ArtVenture actually deals with — and every suggestion is re-validated against the feasibility engine before it's ever shown, so an "optimization" that trades one violation for another gets rejected rather than surfaced.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">src/services/optimizer.ts</span><span>nearest-neighbor core loop</span></div>
+      <pre><code class="language-typescript">// Visit remaining blocks by nearest-neighbor (using travel time)
+while (visited.size &lt; items.length) {
+  let nearestItem: DayItemWithBlock | null = null;
+  let nearestTime = Infinity;
+
+  for (const item of items) {
+    if (visited.has(item.id)) continue;
+
+    const { travelTimeMinutes } = getTravelTimeBetweenBlocks(
+      current.block, item.block, "DRIVE"
+    );
+
+    if (travelTimeMinutes &lt; nearestTime) {
+      nearestTime = travelTimeMinutes;
+      nearestItem = item;
+    }
+  }
+
+  optimizedOrder.push(nearestItem);
+  visited.add(nearestItem.id);
+  current = nearestItem;
+}</code></pre>
+    </div>
+
+    <p>Adding a stop mid-route needs a different problem solved: not "reorder everything," but "where does this one new stop cost the least?" <code>detour.ts</code> tries every insertion position and keeps the cheapest.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">src/services/detour.ts</span><span>best-insertion search</span></div>
+      <pre><code class="language-typescript">// Insert between i-1 and i
+const originalTime = getTravelTimeBetweenBlocks(prevBlock, nextBlock, "DRIVE");
+const timePrevToNew  = getTravelTimeBetweenBlocks(prevBlock, newBlock, "DRIVE");
+const timeNewToNext  = getTravelTimeBetweenBlocks(newBlock, nextBlock, "DRIVE");
+
+const addedTime = (timePrevToNew + timeNewToNext) - originalTime;
+
+if (addedTime &lt; minAddedTime) {
+  minAddedTime = addedTime;
+  bestIndex = i;
+}</code></pre>
+    </div>
+    <p class="code-note">Both use a synchronous, cache-first lookup for travel time — real Mapbox routing when cached, a Haversine-distance estimate when it isn't — so reordering never blocks on a network call.</p>
+
+    <div class="feature-row">
+      <div class="fshot">
+        <a href="assets/trip-overview.png" target="_blank" rel="noopener">
+          <img src="assets/trip-overview.png" alt="ArtVenture trip overview with live Mapbox route">
+        </a>
+      </div>
+      <div class="ftext">
+        <div class="fig-label">Fig. 04 — Trip overview</div>
+        <h3>The route, rendered live</h3>
+        <p>A live Mapbox route render for a day's active stops — the line follows whatever order <code>optimizer.ts</code> and <code>detour.ts</code> currently hold.</p>
+      </div>
+    </div>
+
+    <div class="feature-row reverse">
+      <div class="fshot">
+        <a href="assets/route-flow.png" target="_blank" rel="noopener">
+          <img src="assets/route-flow.png" alt="ArtVenture Route Flow panel showing per-stop travel times">
+        </a>
+      </div>
+      <div class="ftext">
+        <div class="fig-label">Fig. 05 — Route Flow builder</div>
+        <h3>Every minute, accounted for</h3>
+        <p>The travel-time chips between stops (206 min, 257 min) are exactly the numbers <code>segment.ts</code> and <code>detour.ts</code> compute, recalculated live as stops are added, moved, or reordered.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§05 · Day battery<span class="tag">battery.ts</span></div>
+    <p>An original feature, not a wired-up library: a 1–5 "how tiring is this day" score, built from total time used, stop count, and whether the day includes a long tour. It's a heuristic I designed and tuned myself, backed by a real test suite covering the edge cases that broke it during development — null durations, undefined travel times, empty days.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">src/services/battery.ts</span><span>load → level</span></div>
+      <pre><code class="language-typescript">const baseLoad = totalTimeHours / DAY_CAP_HOURS;
+
+const extraStops = Math.max(0, activeStops - COMFORT_STOPS);
+const stopPenalty = extraStops * PENALTY_PER_EXTRA_STOP;
+
+const tourPenalty = hasHeavyTour ? HEAVY_TOUR_PENALTY : 0;
+const finalLoad = baseLoad + stopPenalty + tourPenalty;
+
+if (finalLoad &lt;= 0.35)      level = 1; // Light day
+else if (finalLoad &lt;= 0.55) level = 2; // Easy day
+else if (finalLoad &lt;= 0.75) level = 3; // Moderate day
+else if (finalLoad &lt;= 0.95) level = 4; // Busy day
+else                        level = 5; // Heavy day</code></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">src/services/battery.test.ts</span><span>defensive coverage</span></div>
+      <pre><code class="language-typescript">it('should never return NaN values', () => {
+  // Extreme case: all null values
+  const result = computeBattery(items, [null, undefined]);
+
+  expect(Number.isNaN(result.level)).toBe(false);
+  expect(Number.isNaN(result.load)).toBe(false);
+  expect(Number.isNaN(result.breakdown.baseLoad)).toBe(false);
+  expect(result.level).toBeGreaterThanOrEqual(1);
+  expect(result.level).toBeLessThanOrEqual(5);
+});</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§06 · Feasibility &amp; timeline<span class="tag">feasibility.ts · timeline.ts · segment.ts</span></div>
+    <p>The timeline is the scheduling core — it turns an ordered list of stops plus travel segments into real clock times. The feasibility engine then walks that timeline and checks each arrival against opening hours and daylight, producing a hard <code>ERROR</code> or a soft <code>WARNING</code> depending on how reliable the underlying place data is.</p>
+
+    <div class="two-col">
+      <div class="block">
+        <h3>Confidence-aware violations</h3>
+        <p>A late arrival only becomes a hard <code>ERROR</code> if the place data is <code>HIGH</code> confidence, verified within the last year, and has no beta flags — otherwise it's downgraded to a <code>WARNING</code>. The system doesn't block a trip over data it isn't sure of.</p>
+      </div>
+      <div class="block">
+        <h3>Graceful degradation</h3>
+        <p>Route timing never blocks on a live API call. <code>segment.ts</code> checks for cached Mapbox routing first, and silently falls back to a Haversine distance estimate if there's no cache — same interface either way.</p>
+      </div>
+    </div>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">src/services/feasibility.ts</span><span>confidence-gated severity</span></div>
+      <pre><code class="language-typescript">if (!isOpen && closingTime) {
+  const isReliable = isDataReliable(block); // HIGH confidence, verified &lt;1yr, no beta flags
+  const severity = isReliable ? "ERROR" : "WARNING";
+
+  violations.push({
+    type: "ARRIVAL_AFTER_CLOSE",
+    blockName: block.name,
+    message: `Arrives ${eta} · closes ${closingTime}`,
+    severity,
+  });
+}</code></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">src/services/timeline.ts</span><span>ETA chain</span></div>
+      <pre><code class="language-typescript">// ETA(block_i) = ETA(block_i-1) + duration(block_i-1) + travelTime(i-1 → i)
+for (let i = 0; i &lt; activeRoute.length; i++) {
+  orderedBlocks.push({ id: item.id, name: item.block.name, eta: currentTime });
+
+  currentTime = addMinutes(currentTime, item.block.recommendedDuration);
+  if (i &lt; activeRoute.length - 1) {
+    currentTime = addMinutes(currentTime, travelTimes[i]);
+  }
+}</code></pre>
+    </div>
+  </section>
+
+  <footer>
+    <span>ArtVenture — Roei Gamliel</span>
+    <a href="index.html">← back to roeigam.github.io</a>
+  </footer>
+
+</div>
+<script>hljs.highlightAll();</script>
+</body>
+</html>

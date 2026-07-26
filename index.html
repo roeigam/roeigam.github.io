@@ -11,43 +11,52 @@
 <style>
 
   :root{
-    --paper:#EEF1F0; --panel:#F9FAF8; --ink:#152025; --ink-soft:#4B5A5C; --ink-faint:#7C8888;
-    --rule:#C9D2CF; --rule-strong:#9FADA9; --blue:#2B5C78; --blue-bg:#DCE6E9;
+    --bg:#0B1416; --panel:#121E21; --panel-raise:#17262A;
+    --ink:#EDF5F4; --ink-soft:#9FB9BA; --ink-faint:#5C7476;
+    --line:#213538; --line-soft:#1A2B2E;
+    --teal:#3FDCB8; --violet:#8D7CF5;
   }
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
   body{
-    margin:0; background:var(--paper); color:var(--ink);
-    font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:1.6;
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:1.65;
   }
-  .wrap{ max-width:760px; margin:0 auto; padding:14vw 6vw 10vw 6vw; }
-  @media(min-width:700px){ .wrap{ padding:100px 24px 80px 24px; } }
+  ::selection{ background:var(--violet); color:#0B1416; }
 
-  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--blue); margin-bottom:14px; }
-  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:44px; line-height:1.05; letter-spacing:-0.01em; margin:0 0 10px 0; }
-  .role{ font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink-soft); letter-spacing:0.02em; margin-bottom:26px; }
+  .aurora-bar{ height:4px; width:100%; background:linear-gradient(90deg, var(--teal), var(--violet) 60%, #C084F5); }
 
-  p.lede{ font-size:17px; color:var(--ink-soft); max-width:56ch; margin:0 0 30px 0; }
-  p.lede b{ color:var(--ink); font-weight:600; }
+  .wrap{ max-width:840px; margin:0 auto; padding:12vw 6vw 12vw 6vw; }
+  @media(min-width:700px){ .wrap{ padding:100px 24px 100px 24px; } }
 
-  .links{ display:flex; flex-wrap:wrap; gap:10px 18px; margin-bottom:56px; font-family:'JetBrains Mono',monospace; font-size:14px; }
-  .links a{ color:var(--blue); text-decoration:none; border-bottom:1px solid var(--blue-bg); padding-bottom:2px; }
-  .links a:hover{ border-bottom-color:var(--blue); }
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--teal); margin-bottom:16px; }
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:48px; line-height:1.03; letter-spacing:-0.015em; margin:0 0 10px 0; }
+  .role{ font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink-soft); letter-spacing:0.02em; margin-bottom:28px; }
 
-  .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--blue); border-bottom:1px solid var(--ink); padding-bottom:8px; margin:0 0 22px 0; }
+  p.lede{ font-size:17.5px; color:var(--ink-soft); max-width:56ch; margin:0 0 32px 0; }
+  p.lede b{ color:var(--teal); font-weight:600; }
 
-  .card{ display:block; text-decoration:none; color:inherit; border:1px solid var(--rule-strong); background:var(--panel); padding:22px 24px; margin-bottom:16px; transition:border-color .15s ease, transform .15s ease; }
-  .card:hover{ border-color:var(--blue); transform:translateY(-1px); }
-  .card .ctop{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px; }
-  .card .ctitle{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:20px; color:var(--ink); }
+  .links{ display:flex; flex-wrap:wrap; gap:10px 20px; margin-bottom:60px; font-family:'JetBrains Mono',monospace; font-size:14px; }
+  .links a{ color:var(--ink-soft); text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; transition:color .15s ease, border-color .15s ease; }
+  .links a:hover{ color:var(--teal); border-bottom-color:var(--teal); }
+
+  .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); border-bottom:1px solid var(--line); padding-bottom:10px; margin:0 0 22px 0; }
+
+  .card{ display:block; text-decoration:none; color:inherit; border:1px solid var(--line); background:var(--panel); padding:24px 26px; margin-bottom:18px; transition:border-color .15s ease, transform .15s ease, background .15s ease; position:relative; overflow:hidden; }
+  .card::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg, var(--teal), var(--violet)); opacity:0; transition:opacity .15s ease; }
+  .card:hover{ border-color:var(--violet); transform:translateY(-2px); background:var(--panel-raise); }
+  .card:hover::before{ opacity:1; }
+  .card .ctop{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+  .card .ctitle{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:21px; color:var(--ink); }
   .card .ctag{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
   .card p{ margin:0; color:var(--ink-soft); font-size:15px; }
-  .card .cta{ display:inline-block; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--blue); }
+  .card .cta{ display:inline-block; margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--teal); }
   .card .cta::after{ content:" →"; }
 
-  .stack-line{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); margin-top:-6px; margin-bottom:2px; }
+  .stack-line{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .stack-line span{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink-soft); background:var(--bg); border:1px solid var(--line); padding:4px 9px; }
 
-  footer{ margin-top:70px; padding-top:20px; border-top:1px solid var(--rule); font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer{ margin-top:76px; padding-top:22px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
   footer a{ color:var(--ink-faint); }
 
   section{ margin-bottom:56px; }
@@ -55,6 +64,7 @@
 </style>
 </head>
 <body>
+<div class="aurora-bar"></div>
 <div class="wrap">
 
   <div class="eyebrow">Software Developer</div>
@@ -72,24 +82,24 @@
   <section>
     <div class="h2">Work</div>
 
-    <a class="card" href="ArtVenture-Portfolio.pdf" target="_blank" rel="noopener">
-      <div class="ctop"><span class="ctitle">ArtVenture</span><span class="ctag">Case Study · PDF</span></div>
+    <a class="card" href="artventure-case-study.html">
+      <div class="ctop"><span class="ctitle">ArtVenture</span><span class="ctag">Case Study · Interactive</span></div>
       <p>A trip-planning platform built around a deterministic feasibility engine — checks whether a planned day is actually achievable given real drive times, opening hours, and daylight windows, and returns a clear verdict instead of a guess. ~74K lines of code, 48 API routes, 6-source data pipeline.</p>
-      <div class="stack-line">Next.js · TypeScript · Prisma · PostgreSQL · Mapbox GL · Stripe</div>
+      <div class="stack-line"><span>Next.js</span><span>TypeScript</span><span>Prisma</span><span>PostgreSQL</span><span>Mapbox GL</span><span>Stripe</span></div>
       <span class="cta">Read the case study</span>
     </a>
 
     <a class="card" href="ArtVenture-Changelog.pdf" target="_blank" rel="noopener">
       <div class="ctop"><span class="ctitle">ArtVenture — Release Notes</span><span class="ctag">Changelog · PDF</span></div>
-      <p>The engineering changelog kept for ArtVenture across its first six releases — deploy-breaking bugs found and fixed, data-integrity cleanups, and product decisions made along the way, written up the way I track real releases.</p>
-      <div class="stack-line">v0.1.0 – v0.6.0 · Prisma migrations · CI/CD · data pipeline hardening</div>
+      <p>The development changelog kept for ArtVenture across its first six releases — deploy-breaking bugs found and fixed, data-integrity cleanups, and product decisions made along the way, written up the way I track real releases.</p>
+      <div class="stack-line"><span>v0.1.0 – v0.6.0</span><span>Prisma migrations</span><span>CI/CD</span><span>data pipeline hardening</span></div>
       <span class="cta">Read the changelog</span>
     </a>
 
     <a class="card" href="Release-Engineering-Rafael.pdf" target="_blank" rel="noopener">
       <div class="ctop"><span class="ctitle">Rebuilding How a Team Ships</span><span class="ctag">Case Study · PDF</span></div>
       <p>Rebuilt the release process for a mission-critical communications program at Rafael Advanced Defense Systems: portable HTML→PDF release notes, a one-click versioning tool, a Windows app that replaced a manual SSH workflow, and everyday scripting that removed friction across a team of integrators.</p>
-      <div class="stack-line">Python · Bash · Linux · SSH automation · Windows desktop development</div>
+      <div class="stack-line"><span>Python</span><span>Bash</span><span>Linux</span><span>SSH automation</span><span>Windows desktop development</span></div>
       <span class="cta">Read the case study</span>
     </a>
 
