@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ferry — Roei Gamliel</title>
+<meta name="description" content="Ferry: a config-driven Windows desktop tool that bridges Windows and Linux for remote device operations, without manual SSH.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/default-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+
+  :root{
+    --bg:#0B1416; --panel:#121E21; --panel-raise:#17262A; --code-bg:#080F11;
+    --ink:#EDF5F4; --ink-soft:#9FB9BA; --ink-faint:#5C7476;
+    --line:#213538; --line-soft:#1A2B2E;
+    --teal:#3FDCB8; --violet:#8D7CF5; --red:#E2775A; --amber:#D9A94F;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:1.65;
+  }
+  ::selection{ background:var(--violet); color:#0B1416; }
+
+  .aurora-bar{ height:4px; width:100%; background:linear-gradient(90deg, var(--teal), var(--violet) 60%, #C084F5); }
+
+  .wrap{ max-width:1240px; margin:0 auto; padding:10vw 6vw 12vw 6vw; }
+  @media(min-width:700px){ .wrap{ padding:56px 44px 100px 44px; } }
+
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--teal); margin-bottom:28px; display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap; }
+  .eyebrow .meta{ color:var(--ink-faint); }
+  .back{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-faint); text-decoration:none; border-bottom:1px solid transparent; }
+  .back:hover{ color:var(--teal); border-bottom-color:var(--teal); }
+
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:56px; line-height:1.0; letter-spacing:-0.015em; margin:0 0 12px 0; }
+  @media(min-width:700px){ h1{ font-size:72px; } }
+  .role{ font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink-soft); letter-spacing:0.02em; margin-bottom:26px; }
+
+  p.lede{ font-size:19px; color:var(--ink-soft); max-width:66ch; margin:0 0 40px 0; }
+  p.lede b{ color:var(--teal); font-weight:600; }
+
+  /* Hero banner */
+  .hero-shot{ position:relative; margin:0 0 50px 0; border:1px solid var(--line); background:var(--panel); }
+  .hero-shot a{ display:block; line-height:0; }
+  .hero-shot img{ display:block; width:100%; height:auto; }
+  .hero-cap{ display:flex; justify-content:space-between; gap:16px; padding:12px 18px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); border-top:1px solid var(--line); flex-wrap:wrap; }
+  .hero-cap b{ color:var(--ink-soft); font-weight:500; }
+
+  section{ margin-bottom:72px; }
+  .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); border-bottom:1px solid var(--line); padding-bottom:10px; margin:0 0 26px 0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+  .h2 .tag{ color:var(--ink-faint); font-weight:500; text-transform:none; letter-spacing:0; }
+
+  section > p{ color:var(--ink-soft); margin:0 0 18px 0; }
+  section > p b{ color:var(--ink); font-weight:600; }
+  section > p code{ font-family:'JetBrains Mono',monospace; font-size:0.9em; background:rgba(141,124,245,0.14); color:var(--violet); padding:1px 6px; border-radius:3px; }
+
+  .stack-tags{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 8px 0; }
+  .stack-tags span{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-soft); background:var(--panel); border:1px solid var(--line); padding:6px 12px; }
+
+  /* Code card */
+  .code-card{ background:var(--code-bg); border:1px solid var(--line); margin:20px 0 20px 0; overflow:hidden; }
+  .code-card .cc-head{ display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12px; color:#6F8A8C; flex-wrap:wrap; gap:6px; }
+  .code-card .cc-head .fname{ color:var(--teal); }
+  .code-card pre{ margin:0; padding:18px 20px; overflow-x:auto; }
+  .code-card code.hljs{ background:transparent !important; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.7; padding:0; }
+  .code-note{ font-family:'IBM Plex Sans',sans-serif; font-size:14px; color:var(--ink-faint); margin:-8px 0 26px 0; padding-left:16px; border-left:2px solid var(--violet); font-style:italic; }
+
+  .two-col{ display:grid; grid-template-columns:1fr; gap:26px; }
+  @media(min-width:700px){ .two-col{ grid-template-columns:1fr 1fr; } }
+  .two-col .block{ background:var(--panel); border:1px solid var(--line); padding:20px 22px; }
+  .two-col .block h3{ font-family:'Space Grotesk',sans-serif; font-size:16.5px; margin:0 0 8px 0; color:var(--ink); }
+  .two-col .block p{ font-size:14.5px; margin:0; color:var(--ink-soft); }
+
+  /* Feature rows: big image + caption, alternating sides */
+  .feature-row{ display:grid; grid-template-columns:1fr; gap:20px; align-items:center; margin:8px 0 46px 0; }
+  @media(min-width:800px){
+    .feature-row{ grid-template-columns:1.35fr 1fr; gap:44px; }
+    .feature-row.reverse{ grid-template-columns:1fr 1.35fr; }
+    .feature-row.reverse .fshot{ order:2; }
+    .feature-row.reverse .ftext{ order:1; }
+  }
+  .fshot{ background:var(--panel); border:1px solid var(--line); }
+  .fshot a{ display:block; line-height:0; position:relative; }
+  .fshot img{ display:block; width:100%; height:auto; cursor:zoom-in; }
+  .fshot a::after{ content:"⤢ open full size"; position:absolute; right:10px; bottom:10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#EDF5F4; background:rgba(8,15,17,0.78); padding:4px 8px; opacity:0; transition:opacity .15s ease; }
+  .fshot a:hover::after{ opacity:1; }
+  .ftext .fig-label{ font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--teal); margin-bottom:8px; }
+  .ftext h3{ font-family:'Space Grotesk',sans-serif; font-size:22px; margin:0 0 10px 0; color:var(--ink); }
+  .ftext p{ font-size:15px; color:var(--ink-soft); margin:0; line-height:1.6; }
+
+  /* Control-type legend */
+  .legend{ display:grid; grid-template-columns:1fr; gap:14px; margin:22px 0 8px 0; }
+  @media(min-width:700px){ .legend{ grid-template-columns:repeat(3,1fr); } }
+  .legend .item{ border-left:2px solid var(--violet); padding-left:14px; }
+  .legend .item h5{ font-family:'JetBrains Mono',monospace; font-size:12.5px; margin:0 0 6px 0; color:var(--ink); }
+  .legend .item p{ font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.55; }
+
+  footer{ margin-top:80px; padding-top:24px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer a{ color:var(--ink-faint); }
+
+</style>
+</head>
+<body>
+<div class="aurora-bar"></div>
+<div class="wrap">
+
+  <div class="eyebrow">
+    <a class="back" href="index.html">← roeigam.github.io</a>
+    <span class="meta">2022–2024</span>
+  </div>
+
+  <h1>Ferry</h1>
+  <div class="role">Rafael Advanced Defense Systems · Cross-Platform Remote Operations Tool</div>
+
+  <p class="lede">Every remote operation on our hardware meant the same manual ritual: SSH in by hand, transfer a file, run a command, read raw terminal output to guess whether it worked. I built a Windows desktop tool that carries an engineer across that gap in one click — <b>SSH and file transfer under the hood</b>, a <b>plain-English result</b> on screen, and <b>every operation defined in config, not code</b>, so adding a new one never means touching the app itself.</p>
+
+  <p style="font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink-faint); margin:-20px 0 40px 0;">Built during the same release-engineering work covered in the <a href="rafael-case-study.html" style="color:var(--teal);">Rafael Case Study →</a></p>
+
+  <div class="hero-shot">
+    <a href="assets-rafael-ferry/ferry-general.png" target="_blank" rel="noopener">
+      <img src="assets-rafael-ferry/ferry-general.png" alt="Ferry General tab showing device operations with plain-English labels">
+    </a>
+    <div class="hero-cap"><span><b>Ferry</b> — General tab</span><span>click to open full size</span></div>
+  </div>
+
+  <section>
+    <div class="h2">§01 · The problem<span class="tag">before this existed</span></div>
+    <p>Every device operation — rebooting a unit, pulling its logs, changing an identifier — meant opening a terminal, SSH-ing in by hand, running the right command in the right order, and reading raw shell output to work out whether it actually succeeded. That was fine for the person who wrote the scripts. It was much less fine for everyone else on the team who just needed the operation done, didn't want to memorize SSH syntax, and had no easy way to tell a real failure from a scary-looking but harmless warning.</p>
+    <p>File transfer had the same friction in both directions — pulling logs off a unit or pushing a file onto one meant a manual <code>pscp</code> command every time, typed correctly, from the right folder, with the right arguments.</p>
+  </section>
+
+  <section>
+    <div class="h2">§02 · The architecture<span class="tag">Tabs.xml → Runner.xml → Messages.xml</span></div>
+    <p>The app itself has almost no hardcoded behavior. Three small config files define everything the UI shows and does — which is what let this grow from a handful of operations to dozens without ever touching the C# behind it.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">Tabs.xml</span><span>declares the tabs</span></div>
+      <pre><code class="language-xml">&lt;SerializeTabData&gt;
+  &lt;tabPageindex&gt;0&lt;/tabPageindex&gt;
+  &lt;tabPageTitle&gt;Cyber&lt;/tabPageTitle&gt;
+&lt;/SerializeTabData&gt;
+&lt;SerializeTabData&gt;
+  &lt;tabPageindex&gt;1&lt;/tabPageindex&gt;
+  &lt;tabPageTitle&gt;Installations&lt;/tabPageTitle&gt;
+&lt;/SerializeTabData&gt;
+&lt;SerializeTabData&gt;
+  &lt;tabPageindex&gt;2&lt;/tabPageindex&gt;
+  &lt;tabPageTitle&gt;General&lt;/tabPageTitle&gt;
+&lt;/SerializeTabData&gt;</code></pre>
+    </div>
+
+    <p>Each row within a tab is its own entry in <code>Runner.xml</code> — an ID, which tab it belongs to, a label, and one field that matters more than any other: <code>eRunControlType</code>. That single value decides what the row looks like on screen.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">Runner.xml</span><span>General tab rows</span></div>
+      <pre><code class="language-xml">&lt;SerializeUCData&gt;
+  &lt;eRunControlType&gt;Parameter&lt;/eRunControlType&gt;
+  &lt;id&gt;1&lt;/id&gt;&lt;tabPage&gt;2&lt;/tabPage&gt;
+  &lt;description&gt;Update Device ID&lt;/description&gt;
+&lt;/SerializeUCData&gt;
+&lt;SerializeUCData&gt;
+  &lt;eRunControlType&gt;None&lt;/eRunControlType&gt;
+  &lt;id&gt;2&lt;/id&gt;&lt;tabPage&gt;2&lt;/tabPage&gt;
+  &lt;description&gt;Reboot&lt;/description&gt;
+&lt;/SerializeUCData&gt;
+&lt;SerializeUCData&gt;
+  &lt;eRunControlType&gt;None&lt;/eRunControlType&gt;
+  &lt;id&gt;4&lt;/id&gt;&lt;tabPage&gt;2&lt;/tabPage&gt;
+  &lt;description&gt;Remove Mission Files&lt;/description&gt;
+&lt;/SerializeUCData&gt;
+&lt;SerializeUCData&gt;
+  &lt;eRunControlType&gt;None&lt;/eRunControlType&gt;
+  &lt;id&gt;6&lt;/id&gt;&lt;tabPage&gt;2&lt;/tabPage&gt;
+  &lt;description&gt;Download Logs&lt;/description&gt;
+&lt;/SerializeUCData&gt;</code></pre>
+    </div>
+
+    <div class="legend">
+      <div class="item"><h5>None</h5><p>Just a play button — the operation needs no extra input. <em>Reboot</em>, <em>Download Logs</em>.</p></div>
+      <div class="item"><h5>Parameter</h5><p>Renders a text field next to the button. <em>Update Device ID</em> takes the new ID this way.</p></div>
+      <div class="item"><h5>Browse</h5><p>Renders a file-path field with a picker — for operations that need a file uploaded first.</p></div>
+    </div>
+
+    <p>The last piece closes the loop: every script exits with a specific code, and a separate registry maps that code to a plain-English message and a severity — success or error — completely decoupled from the script itself.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">Messages.xml</span><span>exit code → message</span></div>
+      <pre><code class="language-xml">&lt;SerializeMessageData&gt;
+  &lt;id&gt;98&lt;/id&gt;
+  &lt;description&gt;no ping to the BNET&lt;/description&gt;
+  &lt;eSevirity&gt;Error&lt;/eSevirity&gt;
+&lt;/SerializeMessageData&gt;
+&lt;SerializeMessageData&gt;
+  &lt;id&gt;94&lt;/id&gt;
+  &lt;description&gt;ERROR pscp/plink to BNET&lt;/description&gt;
+  &lt;eSevirity&gt;Error&lt;/eSevirity&gt;
+&lt;/SerializeMessageData&gt;
+&lt;SerializeMessageData&gt;
+  &lt;id&gt;1&lt;/id&gt;
+  &lt;description&gt;keys successfully updated&lt;/description&gt;
+  &lt;eSevirity&gt;Success&lt;/eSevirity&gt;
+&lt;/SerializeMessageData&gt;</code></pre>
+    </div>
+    <p class="code-note">Tabs.xml, the General-tab rows shown, and the Messages.xml entries above are the real config — nothing invented here. Rows belonging to the other two tabs are left out by choice; that's covered in §03.</p>
+  </section>
+
+  <section>
+    <div class="h2">§03 · Three tabs, one pattern<span class="tag">Cyber · Installations · General</span></div>
+    <p>The tabs split operations by category rather than by how they work under the hood — every row, regardless of tab, follows the exact same config → control-type → script → message pipeline described above. I'm showing the actual screens below; specific operation labels inside Cyber and Installations are blacked out at my choice, since several relate to security-domain key handling and firmware internals I'd rather not detail publicly. The pattern that runs all of them is identical either way.</p>
+
+    <div class="feature-row">
+      <div class="fshot">
+        <a href="assets-rafael-ferry/ferry-cyber.png" target="_blank" rel="noopener">
+          <img src="assets-rafael-ferry/ferry-cyber.png" alt="Ferry Cyber tab showing security-related device operations">
+        </a>
+      </div>
+      <div class="ftext">
+        <div class="fig-label">Cyber</div>
+        <h3>Security-domain operations</h3>
+        <p>Key and security-module management — the kind of operation where a wrong step is expensive, so the UI keeps it to a checkbox and a single confirm rather than a typed command.</p>
+      </div>
+    </div>
+
+    <div class="feature-row reverse">
+      <div class="fshot">
+        <a href="assets-rafael-ferry/ferry-installations.png" target="_blank" rel="noopener">
+          <img src="assets-rafael-ferry/ferry-installations.png" alt="Ferry Installations tab showing firmware and component upgrade operations">
+        </a>
+      </div>
+      <div class="ftext">
+        <div class="fig-label">Installations</div>
+        <h3>Firmware &amp; component upgrades</h3>
+        <p>The longest tab — every install and upgrade path a unit might need, each one a file-browse-and-run row instead of a remembered sequence of transfer-then-execute commands.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§04 · One click, under the hood<span class="tag">ping-gate → remote command → exit code</span></div>
+    <p>Every button follows the same shape: confirm the device is actually reachable before doing anything, run the operation over SSH, and turn whatever exit code comes back into the right entry from the message registry above. Here's that shape, genericized — the real scripts hardcode a specific default credential inline, which I've replaced with a placeholder rather than show the actual value.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">run-operation.bat</span><span>ping-gate → remote exec → exit code</span></div>
+      <pre><code class="language-bash">set DEVICE_IP=%1
+
+ping -n 1 %DEVICE_IP% | find "TTL" >nul
+IF errorlevel==1 (
+  echo No ping to %DEVICE_IP%
+  exit 98
+)
+
+plink.exe -P 22 -l %DEVICE_USER% -pw %DEVICE_PASS% %DEVICE_USER%@%DEVICE_IP% ^
+  "echo %DEVICE_PASS% | sudo -S /home/device/scripts/operation.sh"
+
+if errorlevel 1 (
+  echo ###operation failed### 1>&2
+  exit 10
+) else (
+  echo ###operation completed successfully###
+  exit 9
+)</code></pre>
+    </div>
+
+    <p>File retrieval follows the same gate, just with a transfer instead of a command — pull the file over <code>pscp</code>, then stamp it with the device ID and a timestamp so ten downloads from ten units never collide in one folder.</p>
+
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">download-artifact.bat</span><span>pscp transfer → timestamped rename</span></div>
+      <pre><code class="language-bash">set /p deviceId="Enter ID: "
+
+pscp -pw %DEVICE_PASS% %DEVICE_USER%@%DEVICE_IP%:%REMOTE_PATH% .\
+
+set stamp=%date:~10,4%%date:~4,2%%date:~7,2%-%time:~0,2%%time:~3,2%
+ren download.tar.gz "%deviceId%_%stamp%_download.tar.gz"
+
+echo Saved as %deviceId%_%stamp%_download.tar.gz</code></pre>
+    </div>
+    <p class="code-note">Reconstructed as a generic example — the real credential value, device paths, and specific operation called have been replaced with placeholders. The ping-gate → remote-action → exit-code → rename-with-timestamp logic matches what I built.</p>
+  </section>
+
+  <section>
+    <div class="h2">§05 · Skills</div>
+    <div class="stack-tags">
+      <span>C# / .NET (WinForms)</span><span>SSH automation (Renci.SshNet, plink, pscp)</span>
+      <span>Config-driven UI design</span><span>Cross-platform tooling (Windows ↔ Linux)</span>
+      <span>Batch scripting</span><span>Bash</span>
+      <span>Status/severity registry design</span><span>Excel export (EPPlus)</span>
+    </div>
+  </section>
+
+  <footer>
+    <span>Ferry — Roei Gamliel</span>
+    <a href="index.html">← back to roeigam.github.io</a>
+  </footer>
+
+</div>
+<script>hljs.highlightAll();</script>
+</body>
+</html>

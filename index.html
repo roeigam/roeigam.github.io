@@ -42,6 +42,8 @@
 
   .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); border-bottom:1px solid var(--line); padding-bottom:10px; margin:0 0 22px 0; }
 
+  .group-label{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin:34px 0 12px 4px; }
+
   .card{ display:block; text-decoration:none; color:inherit; border:1px solid var(--line); background:var(--panel); padding:24px 26px; margin-bottom:18px; transition:border-color .15s ease, transform .15s ease, background .15s ease; position:relative; overflow:hidden; }
   .card::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg, var(--teal), var(--violet)); opacity:0; transition:opacity .15s ease; }
   .card:hover{ border-color:var(--violet); transform:translateY(-2px); background:var(--panel-raise); }
@@ -96,10 +98,19 @@
       <span class="cta">Read the changelog</span>
     </a>
 
+    <div class="group-label">Rafael Advanced Defense Systems · 2022–2024</div>
+
     <a class="card" href="rafael-case-study.html">
       <div class="ctop"><span class="ctitle">Rafael Case Study</span><span class="ctag">Case Study · Interactive</span></div>
-      <p>Rebuilt the release process for a mission-critical communications program at Rafael Advanced Defense Systems: portable HTML→PDF release notes, a one-click versioning tool, a Windows app that replaced a manual SSH workflow, and everyday scripting that removed friction across a team of integrators.</p>
-      <div class="stack-line"><span>Python</span><span>Bash</span><span>Linux</span><span>SSH automation</span><span>Windows desktop development</span></div>
+      <p>Owned release engineering end to end for a mission-critical communications program at Rafael Advanced Defense Systems: portable HTML→PDF release notes, a one-click versioning tool, an artifact-distribution pipeline, and everyday DevOps scripting that removed friction across a team of integrators — all gated by a sanity-check process before anything reached a lab or office.</p>
+      <div class="stack-line"><span>Python</span><span>Bash</span><span>Linux</span><span>Git</span><span>DevOps &amp; CI/CD</span></div>
+      <span class="cta">Read the case study</span>
+    </a>
+
+    <a class="card" href="ferry-case-study.html">
+      <div class="ctop"><span class="ctitle">Ferry</span><span class="ctag">Case Study · Interactive</span></div>
+      <p>A Windows desktop tool that bridges Windows and Linux for remote device operations — SSH and file transfer under the hood, plain-English results on screen, and every operation defined in config rather than code, so adding a new one never means touching the app itself.</p>
+      <div class="stack-line"><span>C# / .NET</span><span>SSH automation</span><span>Config-driven UI</span><span>Windows ↔ Linux tooling</span></div>
       <span class="cta">Read the case study</span>
     </a>
 
