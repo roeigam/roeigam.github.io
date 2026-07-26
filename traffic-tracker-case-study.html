@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traffic Tracker — Roei Gamliel</title>
+<meta name="description" content="Traffic Tracker: YOLOv8 + ByteTrack vehicle tracking that finds each vehicle's closest approach to the camera and exports an annotated video, CSV, and per-vehicle snapshot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/default-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<style>
+
+  :root{
+    --bg:#0B1416; --panel:#121E21; --panel-raise:#17262A; --code-bg:#080F11;
+    --ink:#EDF5F4; --ink-soft:#9FB9BA; --ink-faint:#5C7476;
+    --line:#213538; --line-soft:#1A2B2E;
+    --teal:#3FDCB8; --violet:#8D7CF5; --red:#E2775A; --amber:#D9A94F;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:1.65; }
+  ::selection{ background:var(--violet); color:#0B1416; }
+
+  .aurora-bar{ height:4px; width:100%; background:linear-gradient(90deg, var(--teal), var(--violet) 60%, #C084F5); }
+
+  .wrap{ max-width:1240px; margin:0 auto; padding:10vw 6vw 12vw 6vw; }
+  @media(min-width:700px){ .wrap{ padding:56px 44px 100px 44px; } }
+
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--teal); margin-bottom:28px; display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap; }
+  .eyebrow .status{ color:var(--amber); }
+  .eyebrow .status::before{ content:"● "; }
+  .back{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-faint); text-decoration:none; border-bottom:1px solid transparent; }
+  .back:hover{ color:var(--teal); border-bottom-color:var(--teal); }
+
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:56px; line-height:1.0; letter-spacing:-0.015em; margin:0 0 12px 0; }
+  @media(min-width:700px){ h1{ font-size:72px; } }
+  .role{ font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink-soft); letter-spacing:0.02em; margin-bottom:26px; }
+  p.lede{ font-size:19px; color:var(--ink-soft); max-width:78ch; margin:0 0 40px 0; }
+  p.lede b{ color:var(--teal); font-weight:600; }
+
+  /* Hero video */
+  .hero-shot{ position:relative; margin:0 0 50px 0; border:1px solid var(--line); background:var(--panel); }
+  .hero-shot video{ display:block; width:100%; height:auto; background:#000; }
+  .hero-cap{ display:flex; justify-content:space-between; gap:16px; padding:12px 18px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); border-top:1px solid var(--line); flex-wrap:wrap; }
+  .hero-cap b{ color:var(--ink-soft); font-weight:500; }
+
+  section{ margin-bottom:72px; }
+  .h2{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; color:var(--teal); border-bottom:1px solid var(--line); padding-bottom:10px; margin:0 0 26px 0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+  .h2 .tag{ color:var(--ink-faint); font-weight:500; text-transform:none; letter-spacing:0; }
+  section > p{ color:var(--ink-soft); margin:0 0 18px 0; }
+  section > p b{ color:var(--ink); font-weight:600; }
+  section > p code{ font-family:'JetBrains Mono',monospace; font-size:0.9em; background:rgba(141,124,245,0.14); color:var(--violet); padding:1px 6px; border-radius:3px; }
+
+  /* Pipeline strip */
+  .pipeline{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px 22px; margin:22px 0 8px 0; }
+  @media(min-width:700px){ .pipeline{ grid-template-columns:repeat(4,1fr); } }
+  .pipeline .step{ border-top:2px solid var(--teal); padding-top:12px; }
+  .pipeline .step .num{ font-family:'JetBrains Mono',monospace; color:var(--ink-faint); font-size:11px; letter-spacing:0.06em; }
+  .pipeline .step h4{ font-family:'Space Grotesk',sans-serif; font-size:15px; margin:5px 0 6px 0; color:var(--ink); }
+  .pipeline .step p{ font-size:13px; color:var(--ink-soft); margin:0; line-height:1.55; }
+
+  .stack-tags{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 8px 0; }
+  .stack-tags span{ font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-soft); background:var(--panel); border:1px solid var(--line); padding:6px 12px; }
+
+  /* Code card */
+  .code-card{ background:var(--code-bg); border:1px solid var(--line); margin:20px 0 20px 0; overflow:hidden; }
+  .code-card .cc-head{ display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12px; color:#6F8A8C; flex-wrap:wrap; gap:6px; }
+  .code-card .cc-head .fname{ color:var(--teal); }
+  .code-card pre{ margin:0; padding:18px 20px; overflow-x:auto; }
+  .code-card code.hljs{ background:transparent !important; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.7; padding:0; }
+  .code-note{ font-family:'IBM Plex Sans',sans-serif; font-size:14px; color:var(--ink-faint); margin:-8px 0 26px 0; padding-left:16px; border-left:2px solid var(--violet); font-style:italic; }
+
+  /* CSV sample table */
+  .ver-table{ width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:12.5px; }
+  .ver-table th{ text-align:left; color:var(--ink-faint); font-weight:500; font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase; padding:9px 12px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  .ver-table td{ padding:9px 12px; border-bottom:1px solid var(--line-soft); color:var(--ink-soft); white-space:nowrap; }
+  .ver-table td.cname{ color:var(--teal); }
+  .ver-table-wrap{ overflow-x:auto; border:1px solid var(--line); }
+
+  .two-col{ display:grid; grid-template-columns:1fr; gap:26px; }
+  @media(min-width:700px){ .two-col{ grid-template-columns:1fr 1fr; } }
+  .two-col .block{ background:var(--panel); border:1px solid var(--line); padding:20px 22px; }
+  .two-col .block h3{ font-family:'Space Grotesk',sans-serif; font-size:16.5px; margin:0 0 8px 0; color:var(--ink); }
+  .two-col .block p{ font-size:14.5px; margin:0; color:var(--ink-soft); }
+
+  /* Roadmap */
+  .roadmap{ display:grid; grid-template-columns:1fr; gap:16px; }
+  @media(min-width:700px){ .roadmap{ grid-template-columns:repeat(2,1fr); } }
+  .roadmap .item{ background:var(--panel); border:1px solid var(--line); padding:18px 20px; }
+  .roadmap .item .num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--violet); letter-spacing:0.06em; margin-bottom:6px; }
+  .roadmap .item h4{ font-family:'Space Grotesk',sans-serif; font-size:16px; margin:0 0 8px 0; color:var(--ink); }
+  .roadmap .item p{ font-size:14px; color:var(--ink-soft); margin:0; line-height:1.6; }
+
+  footer{ margin-top:80px; padding-top:24px; border-top:1px solid var(--line); font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer a{ color:var(--ink-faint); }
+
+</style>
+</head>
+<body>
+<div class="aurora-bar"></div>
+<div class="wrap">
+
+  <div class="eyebrow">
+    <a class="back" href="index.html">← roeigam.github.io</a>
+    <span class="status">in active development</span>
+  </div>
+
+  <h1>Traffic Tracker</h1>
+  <div class="role">Solo Project · Computer Vision &amp; Vehicle Tracking</div>
+
+  <p class="lede">Point it at any traffic video and it tracks every vehicle by a persistent ID across frames, works out the single frame where each one passed <b>closest to the camera</b>, and exports an annotated video, a CSV with every vehicle's closest-approach data, and a snapshot image per vehicle — automatically, no manual review of hours of footage required.</p>
+
+  <div class="hero-shot">
+    <video controls autoplay muted loop playsinline poster="assets-traffic-tracker/poster.jpg">
+      <source src="assets-traffic-tracker/annotated.mp4" type="video/mp4">
+    </video>
+    <div class="hero-cap"><span><b>Traffic Tracker</b> — annotated output, real run</span><span>YOLOv8 + ByteTrack</span></div>
+  </div>
+
+  <section>
+    <div class="h2">§01 · How it works<span class="tag">detect → track → score → export</span></div>
+    <p>Every frame gets run through YOLOv8 filtered to vehicle classes only (car, motorcycle, bus, truck). ByteTrack then carries each detection's identity across frames, so the same car keeps the same ID from when it enters the frame to when it leaves. For every tracked vehicle, a closeness heuristic runs on every frame it appears in — the single best frame per vehicle gets kept, and everything else is discarded.</p>
+    <div class="pipeline">
+      <div class="step"><div class="num">01</div><h4>Detect</h4><p>YOLOv8, filtered to car / motorcycle / bus / truck classes only.</p></div>
+      <div class="step"><div class="num">02</div><h4>Track</h4><p>ByteTrack assigns and persists a numeric ID per vehicle across frames.</p></div>
+      <div class="step"><div class="num">03</div><h4>Score</h4><p>Every frame a vehicle appears in gets scored for how close it is to the camera.</p></div>
+      <div class="step"><div class="num">04</div><h4>Export</h4><p>Best frame per vehicle → annotated video, CSV row, and a snapshot image.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§02 · Tuning the tracker<span class="tag">custom_bytetrack.yaml</span></div>
+    <p>Default tracker settings weren't built for cars accelerating toward a fixed camera — vehicles grow rapidly in frame as they approach, which breaks a tracker's default matching assumptions. Every value below was changed on purpose, not left at the library default.</p>
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">custom_bytetrack.yaml</span><span>real config, comments included</span></div>
+      <pre><code class="language-yaml">tracker_type: bytetrack
+
+# Raise this to ensure only solid detections start/maintain tracks
+track_high_thresh: 0.4
+
+# Raise this to filter out noise that creates "ghost" second IDs
+track_low_thresh: 0.2
+
+# Increase this to be "pickier" about starting a brand new ID
+new_track_thresh: 0.5
+
+# Keep this high to bridge gaps if a car is momentarily lost
+track_buffer: 60
+
+# LOWER this (counter-intuitive, but important!) — 0.8 is very strict;
+# lowering it allows more flexibility in matching, especially as cars
+# grow rapidly in size as they get closer to the camera.
+match_thresh: 0.6
+
+fuse_score: True</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§03 · Picking the closest frame<span class="tag">scoring.py</span></div>
+    <p>"Closest to camera" has no depth sensor to fall back on — just a 2D bounding box. The proxy used here is the box's bottom edge (a car lower in frame is standing on ground closer to the camera), with bounding-box area as a tiebreaker for cases where two vehicles land at a similar height in frame.</p>
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">main.py</span><span>closeness_score()</span></div>
+      <pre><code class="language-python">def closeness_score(xyxy):
+    """
+    Proxy for "closest to camera".
+    We prioritize the bottom y (y2): lower in image => likely closer.
+    Secondary tie-breaker: bbox area.
+    """
+    x1, y1, x2, y2 = xyxy
+    area = max(0.0, (x2 - x1)) * max(0.0, (y2 - y1))
+    return float(y2), float(area)</code></pre>
+    </div>
+    <p>That score feeds a running "best so far" dict keyed by track ID — every new frame either beats the current best for that vehicle or gets thrown away.</p>
+    <div class="code-card">
+      <div class="cc-head"><span class="fname">main.py</span><span>per-track best-frame selection</span></div>
+      <pre><code class="language-python">prev = best.get(tid)
+if prev is None or (y2, area) > prev["score_tuple"]:
+    # new best for this vehicle
+    best[tid] = {
+        "score_tuple": (y2, area),
+        "rec": rec,
+    }
+    # Save a proof snapshot (overwrite per id)
+    snap_path = snaps_dir / f"vehicle_{tid}.jpg"
+    cv2.imwrite(str(snap_path), annotated)</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§04 · The output<span class="tag">closest_per_vehicle.csv</span></div>
+    <p>One row per vehicle — its track ID, the frame and timestamp its closest approach happened at, the bounding box at that moment, and the raw score values behind the ranking. Real output from the run in the video above:</p>
+    <div class="ver-table-wrap">
+      <table class="ver-table">
+        <thead><tr><th>track_id</th><th>frame</th><th>timestamp_sec</th><th>bottom_x</th><th>bottom_y</th><th>score_area</th></tr></thead>
+        <tbody>
+          <tr><td class="cname">1</td><td>65</td><td>2.169</td><td>469.36</td><td>394.0</td><td>1950.5</td></tr>
+          <tr><td class="cname">2</td><td>252</td><td>8.408</td><td>506.6</td><td>366.06</td><td>6724.5</td></tr>
+          <tr><td class="cname">3</td><td>21</td><td>0.701</td><td>286.56</td><td>394.0</td><td>6632.2</td></tr>
+          <tr><td class="cname">4</td><td>110</td><td>3.67</td><td>112.64</td><td>394.0</td><td>5949.0</td></tr>
+          <tr><td class="cname">5</td><td>56</td><td>1.869</td><td>63.48</td><td>394.0</td><td>4465.4</td></tr>
+          <tr><td class="cname">6</td><td>230</td><td>7.674</td><td>51.93</td><td>394.0</td><td>1868.8</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§05 · What's next<span class="tag">near-term roadmap</span></div>
+    <p>The script works, but it's still a script — a few things are already planned to make the repo itself read as engineered, not just the pipeline it runs.</p>
+    <div class="roadmap">
+      <div class="item"><div class="num">NEXT UP</div><h4>Repo hygiene</h4><p>Proper <code>.gitignore</code>, stop tracking generated outputs and model weights directly in git — the model already auto-downloads on first run.</p></div>
+      <div class="item"><div class="num">THEN</div><h4>Package structure</h4><p>Split the single script into focused modules — scoring, drawing, video I/O, tracker state, and a thin CLI — same logic, organized into testable units.</p></div>
+      <div class="item"><div class="num">THEN</div><h4>Tests &amp; CI</h4><p>Unit tests for the scoring and per-track selection logic, a smoke test on a trimmed sample video, and a GitHub Actions workflow running lint + tests on every push.</p></div>
+      <div class="item"><div class="num">THEN</div><h4>Docs &amp; polish</h4><p>A proper README with the architecture and tuning rationale, a license, and real logging instead of print statements.</p></div>
+      <div class="item"><div class="num">STRETCH</div><h4>Speed &amp; direction estimation</h4><p>Using bottom-center position deltas across frames — ties the project to actual traffic analysis, not just detection.</p></div>
+      <div class="item"><div class="num">STRETCH</div><h4>Interactive demo</h4><p>A small Streamlit or FastAPI wrapper so results are explorable instead of "run the CLI, open the CSV."</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2">§06 · Skills</div>
+    <div class="stack-tags">
+      <span>Python</span><span>OpenCV</span><span>YOLOv8 (Ultralytics)</span>
+      <span>Object tracking (ByteTrack)</span><span>CLI tooling (argparse)</span>
+      <span>Video &amp; data pipelines</span>
+    </div>
+  </section>
+
+  <footer>
+    <span>Traffic Tracker — Roei Gamliel</span>
+    <a href="index.html">← back to roeigam.github.io</a>
+  </footer>
+
+</div>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
